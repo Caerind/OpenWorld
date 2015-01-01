@@ -25,6 +25,6 @@ class ChunkGenerator
         std::string mDefaultTileset;
 };
 
-}
+} // owi
 
 #endif // CHUNKGENERATOR_HPP

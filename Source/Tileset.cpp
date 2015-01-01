@@ -19,17 +19,17 @@ bool Tileset::loadFromFile(std::string const& filename)
     }
     else
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Tileset: isn't linked to a Map" << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
         temp = filename;
     }
     std::ifstream file(temp);
     if (!file)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Tileset: Cannot read file : " << temp << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
         return false;
     }
     mFilename = filename;
@@ -43,9 +43,9 @@ bool Tileset::loadFromFile(std::string const& filename)
     }
     if (!mTexture->loadFromFile(textureFilename))
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Tileset: Cannot read Texture : " << textureFilename << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
         return false;
     }
     return true;
@@ -66,21 +66,21 @@ sf::Vector2f Tileset::getTexCoords(int id) const
     }
     else if (mMap == nullptr)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Tileset: isn't linked to a Map" << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
     else if (mTexture == nullptr)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Tileset: Cannot access to Texture" << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
     else if (id < 0)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Tileset: id required < 0 : " << id << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
     return sf::Vector2f(0,0);
 }
@@ -93,21 +93,21 @@ int Tileset::getId(sf::Vector2f texCoords) const
     }
     else if (mMap == nullptr)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Tileset: isn't linked to a Map" << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
     else if (mTexture == nullptr)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Tileset: Cannot access to Texture" << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
     else
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Tileset: Uncorrect Texture Rect : " << texCoords.x << " " << texCoords.y << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
     return 0;
 }
@@ -117,4 +117,4 @@ std::string Tileset::getFilename() const
     return mFilename;
 }
 
-}
+} // owi

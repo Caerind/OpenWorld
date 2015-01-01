@@ -107,9 +107,15 @@ Map::Update Map::update(sf::Vector2f position)
 
 void Map::render(unsigned int layer, sf::RenderTarget& target) const
 {
+    #ifdef OWI_INFO
+    sf::Clock clock;
+    #endif // OWI_INFO
+
     sf::RenderStates states;
     states.transform *= getTransform();
     unsigned int maxLayer = getMaxLayer();
+    sf::Transform layerOffset;
+    layerOffset.translate(0,-mTexSize.y+mTileSize.y);
 
     for (unsigned int h = 0; h < maxLayer; h++)
     {
@@ -120,11 +126,20 @@ void Map::render(unsigned int layer, sf::RenderTarget& target) const
                 mChunks[i][j/mChunkSize.y].render(j%mChunkSize.y,h,target,states);
             }
         }
+        states.transform *= layerOffset;
     }
+
+    #ifdef OWI_INFO
+    std::cout << "Map: Drawn in : " << clock.restart().asSeconds() << " s" << std::endl;
+    #endif // OWI_INFO
 }
 
 void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect viewRect) const
 {
+    #ifdef OWI_INFO
+    sf::Clock clock;
+    #endif // OWI_INFO
+
     sf::RenderStates states;
     states.transform *= getTransform();
     unsigned int maxLayer = getMaxLayer();
@@ -145,6 +160,10 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
         }
         states.transform *= layerOffset;
     }
+
+    #ifdef OWI_INFO
+    std::cout << "Map: Drawn in : " << clock.restart().asSeconds() << " s" << std::endl;
+    #endif // OWI_INFO
 }
 
 Tileset::Ptr Map::getTileset(std::string const& filename)
@@ -165,9 +184,9 @@ bool Map::loadTileset(std::string const& filename)
     mTilesets[filename] = std::make_shared<Tileset>(this);
     if (!mTilesets[filename]->loadFromFile(filename))
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Map: Cant load texture : " << filename << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
         return false;
     }
     return true;
@@ -175,7 +194,9 @@ bool Map::loadTileset(std::string const& filename)
 
 void Map::initChunks(sf::Vector2i pos)
 {
+    #ifdef OWI_INFO
     sf::Clock clock;
+    #endif // OWI_INFO
     for (int j = -1; j < 2; j++)
     {
         for (int i = -1; i < 2; i++)
@@ -186,14 +207,16 @@ void Map::initChunks(sf::Vector2i pos)
             }
         }
     }
-    #ifdef DEBUG_INFO
-    std::cout << "Info - Map: Chunks initialized in : " << clock.restart().asSeconds() << " s" << std::endl;
-    #endif // DEBUG
+    #ifdef OWI_INFO
+    std::cout << "Map: Chunks initialized in : " << clock.restart().asSeconds() << " s" << std::endl;
+    #endif // OWI_INFO
 }
 
 void Map::loadChunks(sf::Vector2i pos)
 {
+    #ifdef OWI_INFO
     sf::Clock clock;
+    #endif // OWI_INFO
     for (int j = -1; j < 2; j++)
     {
         for (int i = -1; i < 2; i++)
@@ -205,9 +228,9 @@ void Map::loadChunks(sf::Vector2i pos)
             }
         }
     }
-    #ifdef DEBUG_INFO
-    std::cout << "Info - Map: Chunks initialized in : " << clock.restart().asSeconds() << " s" << std::endl;
-    #endif // DEBUG
+    #ifdef OWI_INFO
+    std::cout << "Map: Chunks initialized in : " << clock.restart().asSeconds() << " s" << std::endl;
+    #endif // OWI_INFO
 }
 
 void Map::createDirectory(std::string const& filename)
@@ -269,4 +292,4 @@ unsigned int Map::getMaxLayer() const
     return ret;
 }
 
-}
+} // owi

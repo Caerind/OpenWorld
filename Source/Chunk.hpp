@@ -55,6 +55,6 @@ class Chunk : public sf::Transformable
         std::vector<Layer> mLayers;
 };
 
-}
+} // owi
 
 #endif // CHUNK_HPP

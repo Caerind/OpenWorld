@@ -30,6 +30,6 @@ class Layer
         Chunk* mParent;
 };
 
-}
+} // owi
 
 #endif // LAYER_HPP

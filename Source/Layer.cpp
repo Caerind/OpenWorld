@@ -6,12 +6,12 @@ namespace owi
 
 Layer::Layer(Chunk* parent) : mParent(parent)
 {
-    #ifdef DEBUG
+    #ifdef OWI_DEBUG
     if (mParent == nullptr)
     {
         std::cout << "Layer: Parent is nullptr in ctor !" << std::endl;
     }
-    #endif // DEBUG
+    #endif // OWI_DEBUG
 
     if (mParent != nullptr)
     {
@@ -41,18 +41,18 @@ void Layer::setTileId(int x, int y, int id)
             }
             else
             {
-                #ifdef DEBUG
+                #ifdef OWI_DEBUG
                 std::cout << "Layer: Cannot access to Tileset (setTileId)" << std::endl;
-                #endif // DEBUG
+                #endif // OWI_DEBUG
             }
         }
         else
         {
-            #ifdef DEBUG
+            #ifdef OWI_DEBUG
             std::cout << "Layer: Incorrect value called" << std::endl;
             std::cout << "Layer: x = " << x << " & size = " << mParent->getSize().x << std::endl;
             std::cout << "Layer: y = " << y << " & size = " << mParent->getSize().y << std::endl;
-            #endif // DEBUG
+            #endif // OWI_DEBUG
         }
     }
 }
@@ -70,18 +70,18 @@ int Layer::getTileId(int x, int y)
             }
             else
             {
-                #ifdef DEBUG
+                #ifdef OWI_DEBUG
                 std::cout << "Layer: Cannot access to Tileset (getTileId)" << std::endl;
-                #endif // DEBUG
+                #endif // OWI_DEBUG
             }
         }
         else
         {
-            #ifdef DEBUG
+            #ifdef OWI_DEBUG
             std::cout << "Layer: Incorrect value called" << std::endl;
             std::cout << "Layer: x = " << x << " & size = " << mParent->getSize().x << std::endl;
             std::cout << "Layer: y = " << y << " & size = " << mParent->getSize().y << std::endl;
-            #endif // DEBUG
+            #endif // OWI_DEBUG
         }
     }
     return 0;
@@ -100,16 +100,16 @@ void Layer::render(unsigned int line, sf::RenderTarget& target, sf::RenderStates
             }
             else
             {
-                #ifdef DEBUG
+                #ifdef OWI_DEBUG
                 std::cout << "Layer: Cannot access to Texture" << std::endl;
-                #endif // DEBUG
+                #endif // OWI_DEBUG
             }
         }
         else
         {
-            #ifdef DEBUG
+            #ifdef OWI_DEBUG
             std::cout << "Layer: Cannot access to Tileset (render)" << std::endl;
-            #endif // DEBUG
+            #endif // OWI_DEBUG
         }
     }
 }
@@ -143,4 +143,4 @@ void Layer::update()
     }
 }
 
-}
+} // owi

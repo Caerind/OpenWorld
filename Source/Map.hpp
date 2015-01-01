@@ -6,6 +6,7 @@
 
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/System/Clock.hpp>
+#include <SFML/System/Thread.hpp>
 
 #include "Chunk.hpp"
 #include "Tileset.hpp"
@@ -73,6 +74,6 @@ class Map : public sf::Transformable
         std::map<std::string,Tileset::Ptr> mTilesets;
 };
 
-}
+} // owi
 
 #endif // MAP_HPP

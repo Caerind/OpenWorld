@@ -30,8 +30,8 @@ void MyFirstChunkGenerator::createChunk(owi::Chunk& chunk, sf::Vector2i pos)
     }
     else
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "ChunkGenerator: hasn't any Map" << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
 }

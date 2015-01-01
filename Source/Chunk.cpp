@@ -12,9 +12,9 @@ Chunk::Chunk(Map* parent)
 {
     if (mParent == nullptr)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Chunk: Haven't any parent" << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
 }
 
@@ -23,9 +23,9 @@ bool Chunk::loadFromFile(std::string const& filename)
     std::ifstream file(filename);
     if (!file)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Chunk: Cannot read file : " << filename << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
         return false;
     }
 
@@ -48,9 +48,9 @@ bool Chunk::loadFromFile(std::string const& filename)
     mTileset = mParent->getTileset(line);
     if (mTileset == nullptr)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Chunk: Don't have any Tileset : " << line << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
 
     // Read Layer Count
@@ -86,9 +86,9 @@ bool Chunk::saveToFile(std::string const& filename)
     std::ofstream file(filename);
     if (!file)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Chunk: Cannot write file : " << filename << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
         return false;
     }
 
@@ -100,10 +100,10 @@ bool Chunk::saveToFile(std::string const& filename)
     file << mPos.x << ":" << mPos.y << std::endl;
     if (mTileset == nullptr)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Chunk: Cannot access Tileset name" << std::endl;
         file << "--ERROR-- Please remplace this line with a correct Tileset file" << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
     else
     {
@@ -129,6 +129,7 @@ bool Chunk::saveToFile(std::string const& filename)
 
 void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& target, sf::RenderStates states) const
 {
+    sf::Clock clock;
     if (layer >= 0 && layer < getLayerCount())
     {
         states.transform *= getTransform();
@@ -136,9 +137,9 @@ void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& targ
     }
     else if (layer < 0)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Chunk: Uncorrect Layer : " << layer << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
 }
 
@@ -152,9 +153,9 @@ void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& targ
     }
     else if (layer < 0)
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Chunk: Uncorrect Layer : " << layer << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
 }
 
@@ -215,9 +216,9 @@ Layer* Chunk::getLayer(unsigned int layer)
     }
     else
     {
-        #ifdef DEBUG
+        #ifdef OWI_DEBUG
         std::cout << "Chunk: Uncorrect Layer : " << layer << std::endl;
-        #endif // DEBUG
+        #endif // OWI_DEBUG
     }
     return nullptr;
 }
@@ -247,4 +248,4 @@ Tileset::Ptr Chunk::getTileset() const
     return mTileset;
 }
 
-}
+} // owi

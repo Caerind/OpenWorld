@@ -36,6 +36,6 @@ class Tileset
         std::string mFilename;
 };
 
-}
+} // owi
 
 #endif // TILESET_HPP
