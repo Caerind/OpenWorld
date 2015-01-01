@@ -42,6 +42,7 @@ class Chunk : public sf::Transformable
 
         Layer* getLayer(unsigned int layer);
         void addLayer();
+        void clearLayers();
         unsigned int getLayerCount() const;
 
         void setTileset(Tileset::Ptr tileset);

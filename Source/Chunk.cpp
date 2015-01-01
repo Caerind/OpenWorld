@@ -227,6 +227,11 @@ void Chunk::addLayer()
     mLayers.push_back(Layer(this));
 }
 
+void Chunk::clearLayers()
+{
+    mLayers.clear();
+}
+
 unsigned int Chunk::getLayerCount() const
 {
     return mLayers.size();

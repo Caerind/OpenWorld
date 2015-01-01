@@ -128,6 +128,8 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
     sf::RenderStates states;
     states.transform *= getTransform();
     unsigned int maxLayer = getMaxLayer();
+    sf::Transform layerOffset;
+    layerOffset.translate(0,-mTexSize.y+mTileSize.y);
 
     for (unsigned int h = 0; h < maxLayer; h++)
     {
@@ -141,6 +143,7 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
                 }
             }
         }
+        states.transform *= layerOffset;
     }
 }
 
