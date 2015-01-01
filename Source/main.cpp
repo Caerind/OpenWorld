@@ -19,7 +19,7 @@ int main()
 
     clock.restart();
 
-    owi::Map map("Data/",sf::Vector2i(32,32),sf::Vector2i(32,32),new MyFirstChunkGenerator());
+    owi::Map map("Data/",sf::Vector2i(32,64),sf::Vector2i(64,32),sf::Vector2i(64,64),new MyFirstChunkGenerator());
 
     std::cout << clock.restart().asSeconds() << std::endl;
 

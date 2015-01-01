@@ -113,7 +113,7 @@ void Map::render(unsigned int layer, sf::RenderTarget& target) const
 
     for (unsigned int h = 0; h < maxLayer; h++)
     {
-        for (unsigned int j = 0; j < 3 * mChunkSize.y; j++)
+        for (unsigned int j = 0; j < static_cast<unsigned int>(3 * mChunkSize.y); j++)
         {
             for (unsigned int i = 0; i < 3; i++)
             {
@@ -131,7 +131,7 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
 
     for (unsigned int h = 0; h < maxLayer; h++)
     {
-        for (unsigned int j = 0; j < 3 * mChunkSize.y; j++)
+        for (unsigned int j = 0; j < static_cast<unsigned int>(3 * mChunkSize.y); j++)
         {
             for (unsigned int i = 0; i < 3; i++)
             {
@@ -245,7 +245,7 @@ void Map::moveBR(sf::Vector2i pos)
     loadChunks(pos);
 }
 
-unsigned int Map::getMaxLayer()
+unsigned int Map::getMaxLayer() const
 {
     unsigned int ret = 0;
     for (unsigned int i = 0; i < 3; i++)

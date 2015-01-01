@@ -60,7 +60,7 @@ class Map : public sf::Transformable
         void moveB(sf::Vector2i pos);
         void moveBR(sf::Vector2i pos);
 
-        unsigned int getMaxLayer();
+        unsigned int getMaxLayer() const;
 
     private:
         sf::Vector2i mChunkSize;
