@@ -60,8 +60,8 @@ sf::Vector2f Tileset::getTexCoords(int id) const
 {
     if (mTexture != nullptr && id >= 0 && mMap != nullptr)
     {
-        int x = (id%(mTexture->getSize().x/mMap->getTileSize().x)) * mMap->getTileSize().x;
-        int y = (id/(mTexture->getSize().y/mMap->getTileSize().y)) * mMap->getTileSize().y;
+        int x = (id%(mTexture->getSize().x/mMap->getTexSize().x)) * mMap->getTexSize().x;
+        int y = (id/(mTexture->getSize().x/mMap->getTexSize().x)) * mMap->getTexSize().y;
         return sf::Vector2f(x,y);
     }
     else if (mMap == nullptr)
@@ -89,7 +89,7 @@ int Tileset::getId(sf::Vector2f texCoords) const
 {
     if (mTexture != nullptr && texCoords.x >= 0 && texCoords.y >= 0 && mMap != nullptr)
     {
-        return texCoords.x / mMap->getTileSize().x + texCoords.y / mMap->getTileSize().y * mMap->getTileSize().x / mTexture->getSize().x;
+        return texCoords.x / mMap->getTexSize().x + texCoords.y / mMap->getTexSize().y * mMap->getTexSize().x / mTexture->getSize().x;
     }
     else if (mMap == nullptr)
     {

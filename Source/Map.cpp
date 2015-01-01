@@ -47,8 +47,8 @@ Map::Update Map::update(sf::Vector2f position)
     auto x = position.x / (mChunkSize.x * mTileSize.x);
     auto y = position.y / (mChunkSize.y * mTileSize.y);
     sf::Vector2i pos = sf::Vector2i(x,y);
-    if (x < 0) pos.x--;
-    if (y < 0) pos.y--;
+    if (x < 0) pos.x-=2;
+    if (y < 0) pos.y-=2;
 
     if (mChunks[1][1].getPos() != pos)
     {

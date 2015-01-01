@@ -128,15 +128,15 @@ void Layer::update()
                 {
                     quad[0].position = sf::Vector2f(i * mParent->getTileSize().x, j * mParent->getTileSize().y);
                     quad[1].position = sf::Vector2f((i + 1) * mParent->getTileSize().x, j * mParent->getTileSize().y);
-                    quad[2].position = sf::Vector2f((i + 1) * mParent->getTileSize().x, (j + 1) * mParent->getTileSize().y);
-                    quad[3].position = sf::Vector2f(i * mParent->getTileSize().x, (j + 1) * mParent->getTileSize().y);
+                    quad[2].position = sf::Vector2f((i + 1) * mParent->getTileSize().x, j * mParent->getTileSize().y + mParent->getTexSize().y);
+                    quad[3].position = sf::Vector2f(i * mParent->getTileSize().x, j * mParent->getTileSize().y + mParent->getTexSize().y);
                 }
                 else
                 {
                     quad[0].position = sf::Vector2f((i + 0.5) * mParent->getTileSize().x, (j + 0.5) * mParent->getTileSize().y);
                     quad[1].position = sf::Vector2f((i + 1.5) * mParent->getTileSize().x, (j + 0.5) * mParent->getTileSize().y);
-                    quad[2].position = sf::Vector2f((i + 1.5) * mParent->getTileSize().x, (j + 1.5) * mParent->getTileSize().y);
-                    quad[3].position = sf::Vector2f((i + 0.5) * mParent->getTileSize().x, (j + 1.5) * mParent->getTileSize().y);
+                    quad[2].position = sf::Vector2f((i + 1.5) * mParent->getTileSize().x, (j + 0.5) * mParent->getTileSize().y + mParent->getTexSize().y);
+                    quad[3].position = sf::Vector2f((i + 0.5) * mParent->getTileSize().x, (j + 0.5) * mParent->getTileSize().y + mParent->getTexSize().y);
                 }
             }
         }

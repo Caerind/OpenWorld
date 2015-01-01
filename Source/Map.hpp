@@ -30,7 +30,7 @@ class Map : public sf::Transformable
         };
 
     public:
-        Map(std::string const& directory, sf::Vector2i chunkSize = sf::Vector2i(32,64), sf::Vector2i tileSize = sf::Vector2i(64,32), sf::Vector2i texSize = sf::Vector2i(64,64), ChunkGenerator* generator = nullptr);
+        Map(std::string const& directory, sf::Vector2i chunkSize, sf::Vector2i tileSize = sf::Vector2i(64,32), sf::Vector2i texSize = sf::Vector2i(64,64), ChunkGenerator* generator = nullptr);
 
         sf::Vector2i getChunkSize() const;
         sf::Vector2i getTileSize() const;
