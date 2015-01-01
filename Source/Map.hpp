@@ -5,8 +5,10 @@
 #include <map>
 
 #include <SFML/Graphics/Transformable.hpp>
+
+#ifdef OWO_INFO
 #include <SFML/System/Clock.hpp>
-#include <SFML/System/Thread.hpp>
+#endif // OWO_INFO
 
 #include "Chunk.hpp"
 #include "Tileset.hpp"
