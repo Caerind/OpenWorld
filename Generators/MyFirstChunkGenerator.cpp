@@ -19,6 +19,8 @@ void MyFirstChunkGenerator::createChunk(owi::Chunk& chunk, sf::Vector2i pos)
             for (unsigned int j = 0; j < static_cast<unsigned int>(chunk.getSize().y); j++)
             {
                 chunk.getLayer(0)->setTileId(i,j,8);
+                if (rand() % 10 == 0)
+                    chunk.getLayer(1)->setTileId(i,j,rand() % 18 + 1);
             }
         }
         chunk.saveToFile(mMap->getDirectory() + std::to_string(pos.x) + "_" + std::to_string(pos.y) + ".chunk");
