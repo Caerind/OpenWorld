@@ -194,7 +194,7 @@ sf::Vector2i Chunk::getTexSize() const
 sf::FloatRect Chunk::getBounds() const
 {
     if (mParent != nullptr)
-        return sf::FloatRect(getPosition(),sf::Vector2f(mParent->getChunkSize().x * mParent->getTileSize().x, mParent->getChunkSize().y * mParent->getTileSize().y * 0.5f));
+        return sf::FloatRect(getPosition(),sf::Vector2f(mParent->getChunkSize().x * mParent->getTileSize().x + 0.5f * mParent->getTileSize().x, mParent->getChunkSize().y * mParent->getTileSize().y * 0.5f));
     return sf::FloatRect(getPosition(),sf::Vector2f(0,0));
 }
 
