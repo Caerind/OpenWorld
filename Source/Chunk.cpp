@@ -8,7 +8,7 @@ Chunk::Chunk(Map* parent)
 : mParent(parent)
 , mPos(sf::Vector2i(0,0))
 , mTileset(nullptr)
-, mLayers({Layer(this),Layer(this),Layer(this)})
+, mLayers()
 {
     if (mParent == nullptr)
     {
@@ -42,10 +42,6 @@ bool Chunk::loadFromFile(std::string const& filename)
     mPos.y = std::stoi(line.substr(line.find(":")+1,line.size()));
 
     sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y));
-    for (unsigned int k = 0; k < 3; k++)
-    {
-        mLayers[k].update();
-    }
 
     // Read Tileset
     std::getline(file,line);
@@ -57,7 +53,17 @@ bool Chunk::loadFromFile(std::string const& filename)
         #endif // DEBUG
     }
 
-    for (unsigned int k = 0; k < 3; k++)
+    // Read Layer Count
+    std::getline(file,line);
+    unsigned int layerCount = std::stoi(line);
+    mLayers.clear();
+    for (unsigned int k = 0; k < layerCount; k++)
+    {
+        addLayer();
+        mLayers.back().update();
+    }
+
+    for (unsigned int k = 0; k < layerCount; k++)
     {
         for (int j = 0; j < mParent->getChunkSize().y; j++)
         {
@@ -104,7 +110,9 @@ bool Chunk::saveToFile(std::string const& filename)
         file << mTileset->getFilename() << std::endl;
     }
 
-    for (unsigned int k = 0; k < 3; k++)
+    file << getLayerCount() << std::endl;
+
+    for (unsigned int k = 0; k < getLayerCount(); k++)
     {
         for (int j = 0; j < mParent->getChunkSize().y; j++)
         {
@@ -119,14 +127,14 @@ bool Chunk::saveToFile(std::string const& filename)
     return true;
 }
 
-void Chunk::render(unsigned int layer, sf::RenderTarget& target, sf::RenderStates states) const
+void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& target, sf::RenderStates states) const
 {
-    if (layer >= 0 && layer < 3)
+    if (layer >= 0 && layer < getLayerCount())
     {
         states.transform *= getTransform();
-        mLayers[layer].render(target,states);
+        mLayers[layer].render(line,target,states);
     }
-    else
+    else if (layer < 0)
     {
         #ifdef DEBUG
         std::cout << "Chunk: Uncorrect Layer : " << layer << std::endl;
@@ -134,11 +142,19 @@ void Chunk::render(unsigned int layer, sf::RenderTarget& target, sf::RenderState
     }
 }
 
-void Chunk::render(unsigned int layer, sf::RenderTarget& target, sf::RenderStates states, sf::FloatRect viewRect) const
+void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& target, sf::RenderStates states, sf::FloatRect viewRect) const
 {
-    if (getBounds().intersects(viewRect))
+    if (layer >= 0 && layer < getLayerCount())
     {
-        render(layer,target,states);
+        states.transform *= getTransform();
+        if (true) // Add the condition to draw depending on the view here
+            mLayers[layer].render(line,target,states);
+    }
+    else if (layer < 0)
+    {
+        #ifdef DEBUG
+        std::cout << "Chunk: Uncorrect Layer : " << layer << std::endl;
+        #endif // DEBUG
     }
 }
 
@@ -168,16 +184,23 @@ sf::Vector2i Chunk::getTileSize() const
     return sf::Vector2i(0,0);
 }
 
+sf::Vector2i Chunk::getTexSize() const
+{
+    if (mParent != nullptr)
+        return mParent->getTexSize();
+    return sf::Vector2i(0,0);
+}
+
 sf::FloatRect Chunk::getBounds() const
 {
     if (mParent != nullptr)
-        return sf::FloatRect(getPosition(),sf::Vector2f(mParent->getChunkSize().x * mParent->getTileSize().x, mParent->getChunkSize().y * mParent->getTileSize().y));
+        return sf::FloatRect(getPosition(),sf::Vector2f(mParent->getChunkSize().x * mParent->getTileSize().x, mParent->getChunkSize().y * mParent->getTileSize().y * 0.5f));
     return sf::FloatRect(getPosition(),sf::Vector2f(0,0));
 }
 
 Layer* Chunk::getLayer(unsigned int layer)
 {
-    if (layer >= 0 && layer < 3)
+    if (layer >= 0 && layer < getLayerCount())
     {
         return &mLayers[layer];
     }
@@ -188,6 +211,11 @@ Layer* Chunk::getLayer(unsigned int layer)
         #endif // DEBUG
     }
     return nullptr;
+}
+
+void Chunk::addLayer()
+{
+    mLayers.push_back(Layer(this));
 }
 
 unsigned int Chunk::getLayerCount() const
