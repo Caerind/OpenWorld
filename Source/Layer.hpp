@@ -2,6 +2,7 @@
 #define LAYER_HPP
 
 #include <iostream>
+#include <vector>
 
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -20,12 +21,12 @@ class Layer
         void setTileId(int x, int y, int id);
         int getTileId(int x, int y);
 
-        void render(sf::RenderTarget& target, sf::RenderStates states) const;
+        void render(unsigned int line, sf::RenderTarget& target, sf::RenderStates states) const;
 
         void update();
 
     private:
-        sf::VertexArray mTiles;
+        std::vector<sf::VertexArray> mLines;
         Chunk* mParent;
 };
 

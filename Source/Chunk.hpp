@@ -1,11 +1,11 @@
 #ifndef CHUNK_HPP
 #define CHUNK_HPP
 
-#include <array>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include <vector>
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderStates.hpp>

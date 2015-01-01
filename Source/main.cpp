@@ -14,7 +14,6 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
     sf::Clock clock;
     sf::View view = window.getView();
-    view.setCenter(sf::Vector2f(100,100));
     sf::FloatRect viewRect;
 
     clock.restart();

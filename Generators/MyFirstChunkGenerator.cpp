@@ -12,9 +12,11 @@ void MyFirstChunkGenerator::createChunk(owi::Chunk& chunk, sf::Vector2i pos)
     {
         chunk.setTileset(mMap->getTileset(mDefaultTileset));
         chunk.setPos(pos);
-        for (unsigned int i = 0; i < 32; i++)
+        chunk.addLayer();
+        chunk.addLayer();
+        for (unsigned int i = 0; i < static_cast<unsigned int>(chunk.getSize().x); i++)
         {
-            for (unsigned int j = 0; j < 32; j++)
+            for (unsigned int j = 0; j < static_cast<unsigned int>(chunk.getSize().y); j++)
             {
                 chunk.getLayer(0)->setTileId(i,j,rand() %4 +1);
             }

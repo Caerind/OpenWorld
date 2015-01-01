@@ -15,7 +15,11 @@ Layer::Layer(Chunk* parent) : mParent(parent)
 
     if (mParent != nullptr)
     {
-        mTiles.setPrimitiveType(sf::Quads);
+        for (unsigned int j = 0; j < static_cast<unsigned int >(mParent->getSize().y); j++)
+        {
+            mLines.push_back(sf::VertexArray());
+            mLines.back().setPrimitiveType(sf::Quads);
+        }
         update();
     }
 }
@@ -29,11 +33,11 @@ void Layer::setTileId(int x, int y, int id)
             if (mParent->getTileset() != nullptr)
             {
                 sf::Vector2f texCoords = mParent->getTileset()->getTexCoords(id);
-                sf::Vertex* quad = &mTiles[(x + y * mParent->getSize().x) * 4];
+                sf::Vertex* quad = &mLines[y][x * 4];
                 quad[0].texCoords = sf::Vector2f(texCoords.x, texCoords.y);
-                quad[1].texCoords = sf::Vector2f(texCoords.x + mParent->getTileSize().x, texCoords.y);
-                quad[2].texCoords = sf::Vector2f(texCoords.x + mParent->getTileSize().x, texCoords.y + mParent->getTileSize().y);
-                quad[3].texCoords = sf::Vector2f(texCoords.x, texCoords.y + mParent->getTileSize().y);
+                quad[1].texCoords = sf::Vector2f(texCoords.x + mParent->getTexSize().x, texCoords.y);
+                quad[2].texCoords = sf::Vector2f(texCoords.x + mParent->getTexSize().x, texCoords.y + mParent->getTexSize().y);
+                quad[3].texCoords = sf::Vector2f(texCoords.x, texCoords.y + mParent->getTexSize().y);
             }
             else
             {
@@ -59,7 +63,7 @@ int Layer::getTileId(int x, int y)
     {
         if (x >= 0 && y >= 0 && x < mParent->getSize().x && y < mParent->getSize().y)
         {
-            sf::Vertex* quad = &mTiles[(x + y * mParent->getSize().x) * 4];
+            sf::Vertex* quad = &mLines[y][x * 4];
             if (mParent->getTileset() != nullptr)
             {
                 return mParent->getTileset()->getId(quad[0].texCoords);
@@ -83,16 +87,16 @@ int Layer::getTileId(int x, int y)
     return 0;
 }
 
-void Layer::render(sf::RenderTarget& target, sf::RenderStates states) const
+void Layer::render(unsigned int line, sf::RenderTarget& target, sf::RenderStates states) const
 {
-    if (mParent != nullptr)
+    if (mParent != nullptr && line >= 0 && line < mLines.size())
     {
         if (mParent->getTileset() != nullptr)
         {
             if (mParent->getTileset()->getTexture() != nullptr)
             {
                 states.texture = mParent->getTileset()->getTexture().get();
-                target.draw(mTiles,states);
+                target.draw(mLines[line],states);
             }
             else
             {
@@ -114,16 +118,26 @@ void Layer::update()
 {
     if (mParent != nullptr)
     {
-        mTiles.resize(mParent->getSize().x * mParent->getSize().y * 4);
-        for (int j = 0; j < mParent->getSize().y; j++)
+        for (unsigned int j = 0; j < static_cast<unsigned int>(mParent->getSize().y); j++)
         {
-            for (int i = 0; i < mParent->getSize().x; i++)
+            mLines[j].resize(mParent->getSize().x * 4);
+            for (unsigned int i = 0; i < static_cast<unsigned int>(mParent->getSize().x); i++)
             {
-                sf::Vertex* quad = &mTiles[(i + j * mParent->getSize().x) * 4];
-                quad[0].position = sf::Vector2f(i * mParent->getTileSize().x, j * mParent->getTileSize().y);
-                quad[1].position = sf::Vector2f((i + 1) * mParent->getTileSize().x, j * mParent->getTileSize().y);
-                quad[2].position = sf::Vector2f((i + 1) * mParent->getTileSize().x, (j + 1) * mParent->getTileSize().y);
-                quad[3].position = sf::Vector2f(i * mParent->getTileSize().x, (j + 1) * mParent->getTileSize().y);
+                sf::Vertex* quad = &mLines[j][i * 4];
+                if (j%2 == 0)
+                {
+                    quad[0].position = sf::Vector2f(i * mParent->getTileSize().x, j * mParent->getTileSize().y);
+                    quad[1].position = sf::Vector2f((i + 1) * mParent->getTileSize().x, j * mParent->getTileSize().y);
+                    quad[2].position = sf::Vector2f((i + 1) * mParent->getTileSize().x, (j + 1) * mParent->getTileSize().y);
+                    quad[3].position = sf::Vector2f(i * mParent->getTileSize().x, (j + 1) * mParent->getTileSize().y);
+                }
+                else
+                {
+                    quad[0].position = sf::Vector2f((i + 0.5) * mParent->getTileSize().x, (j + 0.5) * mParent->getTileSize().y);
+                    quad[1].position = sf::Vector2f((i + 1.5) * mParent->getTileSize().x, (j + 0.5) * mParent->getTileSize().y);
+                    quad[2].position = sf::Vector2f((i + 1.5) * mParent->getTileSize().x, (j + 1.5) * mParent->getTileSize().y);
+                    quad[3].position = sf::Vector2f((i + 0.5) * mParent->getTileSize().x, (j + 1.5) * mParent->getTileSize().y);
+                }
             }
         }
     }
