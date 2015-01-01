@@ -5,6 +5,7 @@
 #include <map>
 
 #include <SFML/Graphics/Transformable.hpp>
+#include <SFML/System/Clock.hpp>
 
 #include "Chunk.hpp"
 #include "Tileset.hpp"

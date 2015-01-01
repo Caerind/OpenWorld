@@ -16,15 +16,7 @@ int main()
     sf::View view = window.getView();
     sf::FloatRect viewRect;
 
-    sf::CircleShape p;
-    p.setRadius(2);
-    p.setFillColor(sf::Color::Red);
-
-    clock.restart();
-
     owi::Map map("Data/",sf::Vector2i(32,64),sf::Vector2i(64,32),sf::Vector2i(64,64),new MyFirstChunkGenerator());
-
-    std::cout << clock.restart().asSeconds() << std::endl;
 
     while (window.isOpen())
     {
@@ -50,7 +42,6 @@ int main()
         window.clear();
         window.setView(view);
         map.render(0,window,viewRect);
-        window.draw(p);
         window.display();
     }
 

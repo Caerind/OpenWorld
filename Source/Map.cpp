@@ -45,7 +45,7 @@ std::string Map::getDirectory() const
 Map::Update Map::update(sf::Vector2f position)
 {
     auto x = position.x / (mChunkSize.x * mTileSize.x);
-    auto y = position.y / (mChunkSize.y * mTileSize.y);
+    auto y = position.y / (mChunkSize.y * mTileSize.y * 0.5f);
     sf::Vector2i pos = sf::Vector2i(x,y);
     if (x < 0) pos.x--;
     if (y < 0) pos.y--;
@@ -172,6 +172,7 @@ bool Map::loadTileset(std::string const& filename)
 
 void Map::initChunks(sf::Vector2i pos)
 {
+    sf::Clock clock;
     for (int j = -1; j < 2; j++)
     {
         for (int i = -1; i < 2; i++)
@@ -182,10 +183,14 @@ void Map::initChunks(sf::Vector2i pos)
             }
         }
     }
+    #ifdef DEBUG_INFO
+    std::cout << "Info - Map: Chunks initialized in : " << clock.restart().asSeconds() << " s" << std::endl;
+    #endif // DEBUG
 }
 
 void Map::loadChunks(sf::Vector2i pos)
 {
+    sf::Clock clock;
     for (int j = -1; j < 2; j++)
     {
         for (int i = -1; i < 2; i++)
@@ -197,6 +202,9 @@ void Map::loadChunks(sf::Vector2i pos)
             }
         }
     }
+    #ifdef DEBUG_INFO
+    std::cout << "Info - Map: Chunks initialized in : " << clock.restart().asSeconds() << " s" << std::endl;
+    #endif // DEBUG
 }
 
 void Map::createDirectory(std::string const& filename)
