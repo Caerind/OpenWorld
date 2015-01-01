@@ -41,7 +41,7 @@ bool Chunk::loadFromFile(std::string const& filename)
     mPos.x = std::stoi(line.substr(0,line.find(":")));
     mPos.y = std::stoi(line.substr(line.find(":")+1,line.size()));
 
-    sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y));
+    sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y * 0.5f));
 
     // Read Tileset
     std::getline(file,line);
@@ -162,7 +162,7 @@ void Chunk::setPos(sf::Vector2i pos)
 {
     mPos = pos;
     if (mParent != nullptr)
-        sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y));
+        sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y * 0.5f));
 }
 
 sf::Vector2i Chunk::getPos() const
@@ -194,7 +194,16 @@ sf::Vector2i Chunk::getTexSize() const
 sf::FloatRect Chunk::getBounds() const
 {
     if (mParent != nullptr)
-        return sf::FloatRect(getPosition(),sf::Vector2f(mParent->getChunkSize().x * mParent->getTileSize().x + 0.5f * mParent->getTileSize().x, mParent->getChunkSize().y * mParent->getTileSize().y * 0.5f));
+    {
+        if (mParent->getChunkSize().y%2 == 0)
+        {
+            return sf::FloatRect(getPosition(),sf::Vector2f(mParent->getChunkSize().x * mParent->getTileSize().x + 0.5f * mParent->getTileSize().x, mParent->getChunkSize().y * mParent->getTileSize().y * 0.5f + 0.5f * mParent->getTileSize().y + mParent->getTexSize().y - mParent->getTileSize().y));
+        }
+        else
+        {
+            return sf::FloatRect(getPosition(),sf::Vector2f(mParent->getChunkSize().x * mParent->getTileSize().x + 0.5f * mParent->getTileSize().x, mParent->getChunkSize().y * mParent->getTileSize().y * 0.5f + mParent->getTexSize().y - mParent->getTileSize().y));
+        }
+    }
     return sf::FloatRect(getPosition(),sf::Vector2f(0,0));
 }
 
