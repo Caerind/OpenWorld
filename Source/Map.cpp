@@ -3,9 +3,10 @@
 namespace owi
 {
 
-Map::Map(std::string const& directory, sf::Vector2i chunkSize, sf::Vector2i tileSize, ChunkGenerator* generator)
+Map::Map(std::string const& directory, sf::Vector2i chunkSize, sf::Vector2i tileSize, sf::Vector2i texSize, ChunkGenerator* generator)
 : mChunkSize(chunkSize)
 , mTileSize(tileSize)
+, mTexSize(texSize)
 , mDirectory(directory)
 , mGenerator(generator)
 , mChunks({{ {Chunk(this),Chunk(this),Chunk(this)}
@@ -21,16 +22,6 @@ Map::Map(std::string const& directory, sf::Vector2i chunkSize, sf::Vector2i tile
     initChunks();
 }
 
-void Map::setChunkSize(sf::Vector2i chunkSize)
-{
-    mChunkSize = chunkSize;
-}
-
-void Map::setTileSize(sf::Vector2i tileSize)
-{
-    mTileSize = tileSize;
-}
-
 sf::Vector2i Map::getChunkSize() const
 {
     return mChunkSize;
@@ -39,6 +30,11 @@ sf::Vector2i Map::getChunkSize() const
 sf::Vector2i Map::getTileSize() const
 {
     return mTileSize;
+}
+
+sf::Vector2i Map::getTexSize() const
+{
+    return mTexSize;
 }
 
 std::string Map::getDirectory() const
@@ -56,7 +52,7 @@ Map::Update Map::update(sf::Vector2f position)
 
     if (mChunks[1][1].getPos() != pos)
     {
-        if (mChunks[0][0].getPos() == pos)
+        /*if (mChunks[0][0].getPos() == pos)
         {
             moveTL(pos);
             return Update::TL;
@@ -98,8 +94,13 @@ Map::Update Map::update(sf::Vector2f position)
         }
         else
         {
-            loadChunks(pos);
+        */
+
+        loadChunks(pos);
+
+        /*
         }
+        */
     }
     return Update::Nothing;
 }
@@ -108,11 +109,16 @@ void Map::render(unsigned int layer, sf::RenderTarget& target) const
 {
     sf::RenderStates states;
     states.transform *= getTransform();
-    for (unsigned int j = 0; j < 3; j++)
+    unsigned int maxLayer = getMaxLayer();
+
+    for (unsigned int h = 0; h < maxLayer; h++)
     {
-        for (unsigned int i = 0; i < 3; i++)
+        for (unsigned int j = 0; j < 3 * mChunkSize.y; j++)
         {
-            mChunks[i][j].render(layer,target,states);
+            for (unsigned int i = 0; i < 3; i++)
+            {
+                mChunks[i][j/mChunkSize.y].render(j%mChunkSize.y,h,target,states);
+            }
         }
     }
 }
@@ -121,11 +127,19 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
 {
     sf::RenderStates states;
     states.transform *= getTransform();
-    for (unsigned int j = 0; j < 3; j++)
+    unsigned int maxLayer = getMaxLayer();
+
+    for (unsigned int h = 0; h < maxLayer; h++)
     {
-        for (unsigned int i = 0; i < 3; i++)
+        for (unsigned int j = 0; j < 3 * mChunkSize.y; j++)
         {
-            mChunks[i][j].render(layer,target,states,viewRect);
+            for (unsigned int i = 0; i < 3; i++)
+            {
+                if (mChunks[i][j/mChunkSize.y].getBounds().intersects(viewRect))
+                {
+                    mChunks[i][j/mChunkSize.y].render(j%mChunkSize.y,h,target,states,viewRect);
+                }
+            }
         }
     }
 }
@@ -229,6 +243,19 @@ void Map::moveB(sf::Vector2i pos)
 void Map::moveBR(sf::Vector2i pos)
 {
     loadChunks(pos);
+}
+
+unsigned int Map::getMaxLayer()
+{
+    unsigned int ret = 0;
+    for (unsigned int i = 0; i < 3; i++)
+    {
+        for (unsigned int j = 0; j < 3; j++)
+        {
+            ret = std::max(ret,mChunks[i][j].getLayerCount());
+        }
+    }
+    return ret;
 }
 
 }

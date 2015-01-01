@@ -30,13 +30,11 @@ class Map : public sf::Transformable
         };
 
     public:
-        Map(std::string const& directory, sf::Vector2i chunkSize = sf::Vector2i(32,32), sf::Vector2i tileSize = sf::Vector2i(32,32), ChunkGenerator* generator = nullptr);
-
-        void setChunkSize(sf::Vector2i chunkSize);
-        void setTileSize(sf::Vector2i tileSize);
+        Map(std::string const& directory, sf::Vector2i chunkSize = sf::Vector2i(32,64), sf::Vector2i tileSize = sf::Vector2i(64,32), sf::Vector2i texSize = sf::Vector2i(64,64), ChunkGenerator* generator = nullptr);
 
         sf::Vector2i getChunkSize() const;
         sf::Vector2i getTileSize() const;
+        sf::Vector2i getTexSize() const;
         std::string getDirectory() const;
 
         Update update(sf::Vector2f position);
@@ -62,9 +60,12 @@ class Map : public sf::Transformable
         void moveB(sf::Vector2i pos);
         void moveBR(sf::Vector2i pos);
 
+        unsigned int getMaxLayer();
+
     private:
         sf::Vector2i mChunkSize;
         sf::Vector2i mTileSize;
+        sf::Vector2i mTexSize;
         std::string mDirectory;
         ChunkGenerator* mGenerator;
         std::array<std::array<Chunk,3>,3> mChunks;
