@@ -16,7 +16,17 @@ int main()
     sf::View view = window.getView();
     sf::FloatRect viewRect;
 
-    owi::Map map("Data/",sf::Vector2i(32,64),sf::Vector2i(64,32),sf::Vector2i(64,64),new MyFirstChunkGenerator());
+    owi::MapSettings settings;
+    settings.directory = "Data/";
+    settings.chunkSize = sf::Vector2i(32,64);
+    settings.tileSize = sf::Vector2i(64,32);
+    settings.texSize = sf::Vector2i(64,64);
+    settings.onlineMode = false;
+    settings.isServer = false;
+    settings.generator = new MyFirstChunkGenerator();
+    settings.compressedData = false;
+
+    owi::Map map(settings);
 
     while (window.isOpen())
     {
@@ -29,7 +39,7 @@ int main()
         // Update
         //
         sf::Time dt = clock.restart();
-        sf::Vector2f mvt = movement(dt,800);
+        sf::Vector2f mvt = movement(dt,200);
         view.move(mvt);
 
         map.update(view.getCenter());

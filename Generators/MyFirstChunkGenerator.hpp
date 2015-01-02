@@ -10,6 +10,7 @@ class MyFirstChunkGenerator : public owi::ChunkGenerator
 {
     public:
         MyFirstChunkGenerator();
+        MyFirstChunkGenerator(std::string const& filename);
 
         void createChunk(owi::Chunk& chunk, sf::Vector2i pos);
 };

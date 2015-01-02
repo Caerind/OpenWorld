@@ -3,49 +3,50 @@
 namespace owi
 {
 
-Map::Map(std::string const& directory, sf::Vector2i chunkSize, sf::Vector2i tileSize, sf::Vector2i texSize, ChunkGenerator* generator)
-: mChunkSize(chunkSize)
-, mTileSize(tileSize)
-, mTexSize(texSize)
-, mDirectory(directory)
-, mGenerator(generator)
+Map::Map(MapSettings const& settings)
+: mSettings(settings)
 , mChunks({{ {Chunk(this),Chunk(this),Chunk(this)}
 , {Chunk(this),Chunk(this),Chunk(this)}
 , {Chunk(this),Chunk(this),Chunk(this)} }})
 {
-    if (mGenerator == nullptr)
+    if (mSettings.generator == nullptr)
     {
-        mGenerator = new ChunkGenerator();
+        mSettings.generator = new ChunkGenerator();
     }
-    mGenerator->setMap(this);
-    createDirectory(directory);
+    mSettings.generator->setMap(this);
+    createDirectory(mSettings.directory);
     initChunks();
 }
 
 sf::Vector2i Map::getChunkSize() const
 {
-    return mChunkSize;
+    return mSettings.chunkSize;
 }
 
 sf::Vector2i Map::getTileSize() const
 {
-    return mTileSize;
+    return mSettings.tileSize;
 }
 
 sf::Vector2i Map::getTexSize() const
 {
-    return mTexSize;
+    return mSettings.texSize;
 }
 
 std::string Map::getDirectory() const
 {
-    return mDirectory;
+    return mSettings.directory;
+}
+
+bool Map::isDataCompressed() const
+{
+    return mSettings.compressedData;
 }
 
 Map::Update Map::update(sf::Vector2f position)
 {
-    auto x = position.x / (mChunkSize.x * mTileSize.x);
-    auto y = position.y / (mChunkSize.y * mTileSize.y * 0.5f);
+    auto x = position.x / (mSettings.chunkSize.x * mSettings.tileSize.x);
+    auto y = position.y / (mSettings.chunkSize.y * mSettings.tileSize.y * 0.5f);
     sf::Vector2i pos = sf::Vector2i(x,y);
     if (x < 0) pos.x--;
     if (y < 0) pos.y--;
@@ -115,15 +116,15 @@ void Map::render(unsigned int layer, sf::RenderTarget& target) const
     states.transform *= getTransform();
     unsigned int maxLayer = getMaxLayer();
     sf::Transform layerOffset;
-    layerOffset.translate(0,-mTexSize.y+mTileSize.y);
+    layerOffset.translate(0,-mSettings.texSize.y+mSettings.tileSize.y);
 
     for (unsigned int h = 0; h < maxLayer; h++)
     {
-        for (unsigned int j = 0; j < static_cast<unsigned int>(3 * mChunkSize.y); j++)
+        for (unsigned int j = 0; j < static_cast<unsigned int>(3 * mSettings.chunkSize.y); j++)
         {
             for (unsigned int i = 0; i < 3; i++)
             {
-                mChunks[i][j/mChunkSize.y].render(j%mChunkSize.y,h,target,states);
+                mChunks[i][j/mSettings.chunkSize.y].render(j%mSettings.chunkSize.y,h,target,states);
             }
         }
         states.transform *= layerOffset;
@@ -144,17 +145,17 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
     states.transform *= getTransform();
     unsigned int maxLayer = getMaxLayer();
     sf::Transform layerOffset;
-    layerOffset.translate(0,-mTexSize.y+mTileSize.y);
+    layerOffset.translate(0,-mSettings.texSize.y+mSettings.tileSize.y);
 
     for (unsigned int h = 0; h < maxLayer; h++)
     {
-        for (unsigned int j = 0; j < static_cast<unsigned int>(3 * mChunkSize.y); j++)
+        for (unsigned int j = 0; j < static_cast<unsigned int>(3 * mSettings.chunkSize.y); j++)
         {
             for (unsigned int i = 0; i < 3; i++)
             {
-                if (mChunks[i][j/mChunkSize.y].getBounds().intersects(viewRect))
+                if (mChunks[i][j/mSettings.chunkSize.y].getBounds().intersects(viewRect))
                 {
-                    mChunks[i][j/mChunkSize.y].render(j%mChunkSize.y,h,target,states,viewRect);
+                    mChunks[i][j/mSettings.chunkSize.y].render(j%mSettings.chunkSize.y,h,target,states,viewRect);
                 }
             }
         }
@@ -201,9 +202,16 @@ void Map::initChunks(sf::Vector2i pos)
     {
         for (int i = -1; i < 2; i++)
         {
-            if (!mChunks[i+1][j+1].loadFromFile(mDirectory + std::to_string(pos.x+i) + "_" + std::to_string(pos.y+j) + ".chunk"))
+            if (mSettings.onlineMode && !mSettings.isServer)
             {
-                mGenerator->createChunk(mChunks[i+1][j+1],sf::Vector2i(pos.x+i,pos.y+j));
+                requestChunk(sf::Vector2i(pos.x+i,pos.y+j));
+            }
+            else
+            {
+                if (!mChunks[i+1][j+1].loadFromFile(mSettings.directory + std::to_string(pos.x+i) + "_" + std::to_string(pos.y+j) + ".chunk"))
+                {
+                    mSettings.generator->createChunk(mChunks[i+1][j+1],sf::Vector2i(pos.x+i,pos.y+j));
+                }
             }
         }
     }
@@ -221,16 +229,28 @@ void Map::loadChunks(sf::Vector2i pos)
     {
         for (int i = -1; i < 2; i++)
         {
-            mChunks[i+1][j+1].saveToFile(mDirectory + std::to_string(mChunks[i+1][j+1].getPos().x) + "_" + std::to_string(mChunks[i+1][j+1].getPos().y) + ".chunk");
-            if (!mChunks[i+1][j+1].loadFromFile(mDirectory + std::to_string(pos.x+i) + "_" + std::to_string(pos.y+j) + ".chunk"))
+            if (mSettings.onlineMode && !mSettings.isServer)
             {
-                mGenerator->createChunk(mChunks[i+1][j+1],sf::Vector2i(pos.x+i,pos.y+j));
+                requestChunk(sf::Vector2i(pos.x+i,pos.y+j));
+            }
+            else
+            {
+                mChunks[i+1][j+1].saveToFile(mSettings.directory + std::to_string(mChunks[i+1][j+1].getPos().x) + "_" + std::to_string(mChunks[i+1][j+1].getPos().y) + ".chunk");
+                if (!mChunks[i+1][j+1].loadFromFile(mSettings.directory + std::to_string(pos.x+i) + "_" + std::to_string(pos.y+j) + ".chunk"))
+                {
+                    mSettings.generator->createChunk(mChunks[i+1][j+1],sf::Vector2i(pos.x+i,pos.y+j));
+                }
             }
         }
     }
     #ifdef OWI_INFO
     std::cout << "Map: Chunks initialized in : " << clock.restart().asSeconds() << " s" << std::endl;
     #endif // OWI_INFO
+}
+
+void Map::requestChunk(sf::Vector2i pos)
+{
+
 }
 
 void Map::createDirectory(std::string const& filename)

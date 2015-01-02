@@ -1,7 +1,12 @@
 #include "MyFirstChunkGenerator.hpp"
 #include "Map.hpp"
 
-MyFirstChunkGenerator::MyFirstChunkGenerator() : ChunkGenerator()
+MyFirstChunkGenerator::MyFirstChunkGenerator() : ChunkGenerator(std::string("out.tileset"))
+{
+    srand(time(NULL));
+}
+
+MyFirstChunkGenerator::MyFirstChunkGenerator(std::string const& filename) : ChunkGenerator(filename)
 {
     srand(time(NULL));
 }

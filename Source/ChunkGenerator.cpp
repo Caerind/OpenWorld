@@ -6,7 +6,12 @@ namespace owi
 
 ChunkGenerator::ChunkGenerator()
 {
-    mDefaultTileset = "out.tileset";
+    mDefaultTileset = "";
+}
+
+ChunkGenerator::ChunkGenerator(std::string const& filename)
+{
+    mDefaultTileset = filename;
 }
 
 void ChunkGenerator::setMap(Map* map)

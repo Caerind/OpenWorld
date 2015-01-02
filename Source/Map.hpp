@@ -6,10 +6,11 @@
 
 #include <SFML/Graphics/Transformable.hpp>
 
-#ifdef OWO_INFO
+#ifdef OWI_INFO
 #include <SFML/System/Clock.hpp>
-#endif // OWO_INFO
+#endif // OWI_INFO
 
+#include "MapSettings.hpp"
 #include "Chunk.hpp"
 #include "Tileset.hpp"
 #include "ChunkGenerator.hpp"
@@ -34,12 +35,13 @@ class Map : public sf::Transformable
         };
 
     public:
-        Map(std::string const& directory, sf::Vector2i chunkSize, sf::Vector2i tileSize = sf::Vector2i(64,32), sf::Vector2i texSize = sf::Vector2i(64,64), ChunkGenerator* generator = nullptr);
+        Map(MapSettings const& settings);
 
         sf::Vector2i getChunkSize() const;
         sf::Vector2i getTileSize() const;
         sf::Vector2i getTexSize() const;
         std::string getDirectory() const;
+        bool isDataCompressed() const;
 
         Update update(sf::Vector2f position);
 
@@ -51,6 +53,7 @@ class Map : public sf::Transformable
 
         void initChunks(sf::Vector2i pos = sf::Vector2i(0,0));
         void loadChunks(sf::Vector2i pos);
+        void requestChunk(sf::Vector2i pos);
 
     private:
         void createDirectory(std::string const& filename);
@@ -67,11 +70,7 @@ class Map : public sf::Transformable
         unsigned int getMaxLayer() const;
 
     private:
-        sf::Vector2i mChunkSize;
-        sf::Vector2i mTileSize;
-        sf::Vector2i mTexSize;
-        std::string mDirectory;
-        ChunkGenerator* mGenerator;
+        MapSettings mSettings;
         std::array<std::array<Chunk,3>,3> mChunks;
         std::map<std::string,Tileset::Ptr> mTilesets;
 };

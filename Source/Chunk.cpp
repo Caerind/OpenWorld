@@ -38,6 +38,8 @@ bool Chunk::loadFromFile(std::string const& filename)
 
     // Read Pos
     std::getline(file,line);
+    if (mParent->isDataCompressed())
+        uncompressLine(line);
     mPos.x = std::stoi(line.substr(0,line.find(":")));
     mPos.y = std::stoi(line.substr(line.find(":")+1,line.size()));
 
@@ -45,6 +47,8 @@ bool Chunk::loadFromFile(std::string const& filename)
 
     // Read Tileset
     std::getline(file,line);
+    if (mParent->isDataCompressed())
+        uncompressLine(line);
     mTileset = mParent->getTileset(line);
     if (mTileset == nullptr)
     {
@@ -55,6 +59,8 @@ bool Chunk::loadFromFile(std::string const& filename)
 
     // Read Layer Count
     std::getline(file,line);
+    if (mParent->isDataCompressed())
+        uncompressLine(line);
     unsigned int layerCount = std::stoi(line);
     mLayers.clear();
     for (unsigned int k = 0; k < layerCount; k++)
@@ -68,6 +74,8 @@ bool Chunk::loadFromFile(std::string const& filename)
         for (int j = 0; j < mParent->getChunkSize().y; j++)
         {
             std::getline(file,line);
+            if (mParent->isDataCompressed())
+                uncompressLine(line);
             std::stringstream ss(line);
             std::string temp;
             for (int i = 0; i < mParent->getChunkSize().x; i++)
@@ -97,7 +105,17 @@ bool Chunk::saveToFile(std::string const& filename)
         return false;
     }
 
-    file << mPos.x << ":" << mPos.y << std::endl;
+    // Write Pos
+    if (mParent->isDataCompressed())
+    {
+        file << compressLine(std::string(std::to_string(mPos.x) + ":" + std::to_string(mPos.y))) << std::endl;
+    }
+    else
+    {
+        file << mPos.x << ":" << mPos.y << std::endl;
+    }
+
+    // Write Tileset
     if (mTileset == nullptr)
     {
         #ifdef OWI_DEBUG
@@ -107,10 +125,25 @@ bool Chunk::saveToFile(std::string const& filename)
     }
     else
     {
-        file << mTileset->getFilename() << std::endl;
+        if (mParent->isDataCompressed())
+        {
+            file << compressLine(mTileset->getFilename()) << std::endl;
+        }
+        else
+        {
+            file << mTileset->getFilename() << std::endl;
+        }
     }
 
-    file << getLayerCount() << std::endl;
+    // Wrie Layer Count
+    if (mParent->isDataCompressed())
+    {
+        file << compressLine(std::to_string(getLayerCount())) << std::endl;
+    }
+    else
+    {
+        file << getLayerCount() << std::endl;
+    }
 
     for (unsigned int k = 0; k < getLayerCount(); k++)
     {
@@ -118,7 +151,14 @@ bool Chunk::saveToFile(std::string const& filename)
         {
             for (int i = 0; i < mParent->getChunkSize().x; i++)
             {
-                file << mLayers[k].getTileId(i,j) << ",";
+                if (mParent->isDataCompressed())
+                {
+                    file << compressLine(std::string(std::to_string(mLayers[k].getTileId(i,j)) + ","));
+                }
+                else
+                {
+                    file << mLayers[k].getTileId(i,j) << ",";
+                }
             }
             file << std::endl;
         }
@@ -129,7 +169,6 @@ bool Chunk::saveToFile(std::string const& filename)
 
 void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& target, sf::RenderStates states) const
 {
-    sf::Clock clock;
     if (layer >= 0 && layer < getLayerCount())
     {
         states.transform *= getTransform();
@@ -246,6 +285,16 @@ void Chunk::setTileset(Tileset::Ptr tileset)
 Tileset::Ptr Chunk::getTileset() const
 {
     return mTileset;
+}
+
+void Chunk::uncompressLine(std::string& line)
+{
+
+}
+
+std::string Chunk::compressLine(std::string const& line)
+{
+    return line;
 }
 
 } // owi

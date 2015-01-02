@@ -49,6 +49,10 @@ class Chunk : public sf::Transformable
         Tileset::Ptr getTileset() const;
 
     protected:
+        void uncompressLine(std::string& line);
+        std::string compressLine(std::string const& line);
+
+    protected:
         Map* mParent;
         sf::Vector2i mPos;
         Tileset::Ptr mTileset;
