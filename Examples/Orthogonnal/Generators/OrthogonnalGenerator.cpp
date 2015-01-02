@@ -12,6 +12,10 @@ void OrthogonnalGenerator::createChunk(ow::Chunk& chunk, sf::Vector2i pos)
     {
         chunk.setTileset(mMap->getTileset(mDefaultTileset));
         chunk.setPos(pos);
+        chunk.clearLayers();
+        chunk.addLayer();
+        chunk.addLayer();
+        chunk.addLayer();
         for (unsigned int i = 0; i < 32; i++)
         {
             for (unsigned int j = 0; j < 32; j++)

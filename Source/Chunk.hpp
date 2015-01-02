@@ -37,6 +37,7 @@ class Chunk : public sf::Transformable
         sf::Vector2i getSize() const;
         sf::Vector2i getTileSize() const;
         sf::Vector2i getTexSize() const;
+        bool isIsometric() const;
 
         sf::FloatRect getBounds() const;
 

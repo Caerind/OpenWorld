@@ -231,6 +231,13 @@ sf::Vector2i Chunk::getTexSize() const
     return sf::Vector2i(0,0);
 }
 
+bool Chunk::isIsometric() const
+{
+    if (mParent != nullptr)
+        return mParent->isIsometric();
+    return false;
+}
+
 sf::FloatRect Chunk::getBounds() const
 {
     if (mParent != nullptr)

@@ -116,7 +116,9 @@ void Map::render(unsigned int layer, sf::RenderTarget& target) const
     states.transform *= getTransform();
     unsigned int maxLayer = getMaxLayer();
     sf::Transform layerOffset;
-    layerOffset.translate(0,-mSettings.texSize.y+mSettings.tileSize.y);
+
+    if (isIsometric())
+        layerOffset.translate(0,-mSettings.texSize.y+mSettings.tileSize.y);
 
     for (unsigned int h = 0; h < maxLayer; h++)
     {
@@ -145,7 +147,9 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
     states.transform *= getTransform();
     unsigned int maxLayer = getMaxLayer();
     sf::Transform layerOffset;
-    layerOffset.translate(0,-mSettings.texSize.y+mSettings.tileSize.y);
+
+    if (isIsometric())
+        layerOffset.translate(0,-mSettings.texSize.y+mSettings.tileSize.y);
 
     for (unsigned int h = 0; h < maxLayer; h++)
     {
@@ -160,6 +164,8 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
             }
         }
         states.transform *= layerOffset;
+        if (isIsometric())
+            viewRect.top += (-mSettings.texSize.y+mSettings.tileSize.y);
     }
 
     #ifdef OW_INFO
