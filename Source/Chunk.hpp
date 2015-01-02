@@ -15,6 +15,7 @@
 
 #include "Layer.hpp"
 #include "Tileset.hpp"
+#include "CompressionUtils.hpp"
 
 namespace ow
 {
