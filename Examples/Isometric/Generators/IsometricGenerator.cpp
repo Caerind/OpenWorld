@@ -1,17 +1,12 @@
-#include "MyFirstChunkGenerator.hpp"
+#include "IsometricGenerator.hpp"
 #include "Map.hpp"
 
-MyFirstChunkGenerator::MyFirstChunkGenerator() : ChunkGenerator(std::string("out.tileset"))
+IsometricGenerator::IsometricGenerator() : ChunkGenerator(std::string("out.tileset"))
 {
     srand(time(NULL));
 }
 
-MyFirstChunkGenerator::MyFirstChunkGenerator(std::string const& filename) : ChunkGenerator(filename)
-{
-    srand(time(NULL));
-}
-
-void MyFirstChunkGenerator::createChunk(owi::Chunk& chunk, sf::Vector2i pos)
+void IsometricGenerator::createChunk(ow::Chunk& chunk, sf::Vector2i pos)
 {
     if (mMap != nullptr)
     {
@@ -35,8 +30,8 @@ void MyFirstChunkGenerator::createChunk(owi::Chunk& chunk, sf::Vector2i pos)
     }
     else
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "ChunkGenerator: hasn't any Map" << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
     }
 }

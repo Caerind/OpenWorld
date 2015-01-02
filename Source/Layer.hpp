@@ -1,5 +1,5 @@
-#ifndef LAYER_HPP
-#define LAYER_HPP
+#ifndef OW_LAYER_HPP
+#define OW_LAYER_HPP
 
 #include <iostream>
 #include <vector>
@@ -8,7 +8,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 
-namespace owi
+namespace ow
 {
 
 class Chunk;
@@ -30,6 +30,6 @@ class Layer
         Chunk* mParent;
 };
 
-} // owi
+} // ow
 
-#endif // LAYER_HPP
+#endif // OW_LAYER_HPP

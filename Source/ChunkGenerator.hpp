@@ -1,12 +1,12 @@
-#ifndef CHUNKGENERATOR_HPP
-#define CHUNKGENERATOR_HPP
+#ifndef OW_CHUNKGENERATOR_HPP
+#define OW_CHUNKGENERATOR_HPP
 
 #include <iostream>
 #include <string>
 
 #include "Chunk.hpp"
 
-namespace owi
+namespace ow
 {
 
 class Map;
@@ -27,6 +27,6 @@ class ChunkGenerator
         std::string mDefaultTileset;
 };
 
-} // owi
+} // ow
 
-#endif // CHUNKGENERATOR_HPP
+#endif // OW_CHUNKGENERATOR_HPP

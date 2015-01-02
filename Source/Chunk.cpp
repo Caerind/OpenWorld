@@ -1,7 +1,7 @@
 #include "Chunk.hpp"
 #include "Map.hpp"
 
-namespace owi
+namespace ow
 {
 
 Chunk::Chunk(Map* parent)
@@ -12,9 +12,9 @@ Chunk::Chunk(Map* parent)
 {
     if (mParent == nullptr)
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "Chunk: Haven't any parent" << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
     }
 }
 
@@ -23,9 +23,9 @@ bool Chunk::loadFromFile(std::string const& filename)
     std::ifstream file(filename);
     if (!file)
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "Chunk: Cannot read file : " << filename << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
         return false;
     }
 
@@ -52,9 +52,9 @@ bool Chunk::loadFromFile(std::string const& filename)
     mTileset = mParent->getTileset(line);
     if (mTileset == nullptr)
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "Chunk: Don't have any Tileset : " << line << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
     }
 
     // Read Layer Count
@@ -94,9 +94,9 @@ bool Chunk::saveToFile(std::string const& filename)
     std::ofstream file(filename);
     if (!file)
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "Chunk: Cannot write file : " << filename << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
         return false;
     }
 
@@ -118,10 +118,10 @@ bool Chunk::saveToFile(std::string const& filename)
     // Write Tileset
     if (mTileset == nullptr)
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "Chunk: Cannot access Tileset name" << std::endl;
         file << "--ERROR-- Please remplace this line with a correct Tileset file" << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
     }
     else
     {
@@ -176,9 +176,9 @@ void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& targ
     }
     else if (layer < 0)
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "Chunk: Uncorrect Layer : " << layer << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
     }
 }
 
@@ -192,9 +192,9 @@ void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& targ
     }
     else if (layer < 0)
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "Chunk: Uncorrect Layer : " << layer << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
     }
 }
 
@@ -255,9 +255,9 @@ Layer* Chunk::getLayer(unsigned int layer)
     }
     else
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "Chunk: Uncorrect Layer : " << layer << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
     }
     return nullptr;
 }
@@ -297,4 +297,4 @@ std::string Chunk::compressLine(std::string const& line)
     return line;
 }
 
-} // owi
+} // ow

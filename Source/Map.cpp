@@ -1,6 +1,6 @@
 #include "Map.hpp"
 
-namespace owi
+namespace ow
 {
 
 Map::Map(MapSettings const& settings)
@@ -43,6 +43,11 @@ bool Map::isDataCompressed() const
     return mSettings.compressedData;
 }
 
+bool Map::isIsometric() const
+{
+    return mSettings.isometric;
+}
+
 Map::Update Map::update(sf::Vector2f position)
 {
     auto x = position.x / (mSettings.chunkSize.x * mSettings.tileSize.x);
@@ -53,7 +58,7 @@ Map::Update Map::update(sf::Vector2f position)
 
     if (mChunks[1][1].getPos() != pos)
     {
-        /*if (mChunks[0][0].getPos() == pos)
+        if (mChunks[0][0].getPos() == pos)
         {
             moveTL(pos);
             return Update::TL;
@@ -95,22 +100,17 @@ Map::Update Map::update(sf::Vector2f position)
         }
         else
         {
-        */
-
-        loadChunks(pos);
-
-        /*
+            loadChunks(pos);
         }
-        */
     }
     return Update::Nothing;
 }
 
 void Map::render(unsigned int layer, sf::RenderTarget& target) const
 {
-    #ifdef OWI_INFO
+    #ifdef OW_INFO
     sf::Clock clock;
-    #endif // OWI_INFO
+    #endif // OW_INFO
 
     sf::RenderStates states;
     states.transform *= getTransform();
@@ -130,16 +130,16 @@ void Map::render(unsigned int layer, sf::RenderTarget& target) const
         states.transform *= layerOffset;
     }
 
-    #ifdef OWI_INFO
+    #ifdef OW_INFO
     std::cout << "Map: Drawn in : " << clock.restart().asSeconds() << " s" << std::endl;
-    #endif // OWI_INFO
+    #endif // OW_INFO
 }
 
 void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect viewRect) const
 {
-    #ifdef OWI_INFO
+    #ifdef OW_INFO
     sf::Clock clock;
-    #endif // OWI_INFO
+    #endif // OW_INFO
 
     sf::RenderStates states;
     states.transform *= getTransform();
@@ -162,9 +162,9 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
         states.transform *= layerOffset;
     }
 
-    #ifdef OWI_INFO
+    #ifdef OW_INFO
     std::cout << "Map: Drawn in : " << clock.restart().asSeconds() << " s" << std::endl;
-    #endif // OWI_INFO
+    #endif // OW_INFO
 }
 
 Tileset::Ptr Map::getTileset(std::string const& filename)
@@ -185,9 +185,9 @@ bool Map::loadTileset(std::string const& filename)
     mTilesets[filename] = std::make_shared<Tileset>(this);
     if (!mTilesets[filename]->loadFromFile(filename))
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "Map: Cant load texture : " << filename << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
         return false;
     }
     return true;
@@ -195,9 +195,9 @@ bool Map::loadTileset(std::string const& filename)
 
 void Map::initChunks(sf::Vector2i pos)
 {
-    #ifdef OWI_INFO
+    #ifdef OW_INFO
     sf::Clock clock;
-    #endif // OWI_INFO
+    #endif // OW_INFO
     for (int j = -1; j < 2; j++)
     {
         for (int i = -1; i < 2; i++)
@@ -215,16 +215,16 @@ void Map::initChunks(sf::Vector2i pos)
             }
         }
     }
-    #ifdef OWI_INFO
+    #ifdef OW_INFO
     std::cout << "Map: Chunks initialized in : " << clock.restart().asSeconds() << " s" << std::endl;
-    #endif // OWI_INFO
+    #endif // OW_INFO
 }
 
 void Map::loadChunks(sf::Vector2i pos)
 {
-    #ifdef OWI_INFO
+    #ifdef OW_INFO
     sf::Clock clock;
-    #endif // OWI_INFO
+    #endif // OW_INFO
     for (int j = -1; j < 2; j++)
     {
         for (int i = -1; i < 2; i++)
@@ -243,9 +243,9 @@ void Map::loadChunks(sf::Vector2i pos)
             }
         }
     }
-    #ifdef OWI_INFO
+    #ifdef OW_INFO
     std::cout << "Map: Chunks initialized in : " << clock.restart().asSeconds() << " s" << std::endl;
-    #endif // OWI_INFO
+    #endif // OW_INFO
 }
 
 void Map::requestChunk(sf::Vector2i pos)
@@ -312,4 +312,4 @@ unsigned int Map::getMaxLayer() const
     return ret;
 }
 
-} // owi
+} // ow

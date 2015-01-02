@@ -4,3 +4,7 @@ obj/
 *.depend
 *.cbp
 *~
+*bin/
+*obj/
+*.chunk
+main.cpp

@@ -1,6 +1,6 @@
 #include "MapSettings.hpp"
 
-namespace owi
+namespace ow
 {
 
 MapSettings::MapSettings()
@@ -8,4 +8,4 @@ MapSettings::MapSettings()
     //ctor
 }
 
-}
+} // ow

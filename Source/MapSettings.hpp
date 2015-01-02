@@ -1,5 +1,5 @@
-#ifndef MAPSETTINGS_HPP
-#define MAPSETTINGS_HPP
+#ifndef OW_MAPSETTINGS_HPP
+#define OW_MAPSETTINGS_HPP
 
 #include <string>
 
@@ -7,7 +7,7 @@
 
 #include "ChunkGenerator.hpp"
 
-namespace owi
+namespace ow
 {
 
 struct MapSettings
@@ -18,6 +18,7 @@ struct MapSettings
     sf::Vector2i chunkSize;
     sf::Vector2i tileSize;
     sf::Vector2i texSize;
+    bool isometric;
 
     bool onlineMode;
 
@@ -31,6 +32,6 @@ struct MapSettings
     bool compressedData;
 };
 
-} // owi
+} // ow
 
-#endif // MAPSETTINGS_HPP
+#endif // OW_MAPSETTINGS_HPP

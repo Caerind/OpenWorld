@@ -1,7 +1,7 @@
 #include "ChunkGenerator.hpp"
 #include "Map.hpp"
 
-namespace owi
+namespace ow
 {
 
 ChunkGenerator::ChunkGenerator()
@@ -43,10 +43,10 @@ void ChunkGenerator::createChunk(Chunk& chunk, sf::Vector2i pos)
     }
     else
     {
-        #ifdef OWI_DEBUG
+        #ifdef OW_DEBUG
         std::cout << "ChunkGenerator: hasn't any Map" << std::endl;
-        #endif // OWI_DEBUG
+        #endif // OW_DEBUG
     }
 }
 
-} // owi
+} // ow

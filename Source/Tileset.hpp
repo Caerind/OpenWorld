@@ -1,5 +1,5 @@
-#ifndef TILESET_HPP
-#define TILESET_HPP
+#ifndef OW_TILESET_HPP
+#define OW_TILESET_HPP
 
 #include <fstream>
 #include <iostream>
@@ -8,7 +8,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 
-namespace owi
+namespace ow
 {
 
 class Map;
@@ -36,6 +36,6 @@ class Tileset
         std::string mFilename;
 };
 
-} // owi
+} // ow
 
-#endif // TILESET_HPP
+#endif // OW_TILESET_HPP

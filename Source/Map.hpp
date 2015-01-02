@@ -1,21 +1,21 @@
-#ifndef MAP_HPP
-#define MAP_HPP
+#ifndef OW_MAP_HPP
+#define OW_MAP_HPP
 
 #include <array>
 #include <map>
 
 #include <SFML/Graphics/Transformable.hpp>
 
-#ifdef OWI_INFO
+#ifdef OW_INFO
 #include <SFML/System/Clock.hpp>
-#endif // OWI_INFO
+#endif // OW_INFO
 
 #include "MapSettings.hpp"
 #include "Chunk.hpp"
 #include "Tileset.hpp"
 #include "ChunkGenerator.hpp"
 
-namespace owi
+namespace ow
 {
 
 class Map : public sf::Transformable
@@ -42,6 +42,7 @@ class Map : public sf::Transformable
         sf::Vector2i getTexSize() const;
         std::string getDirectory() const;
         bool isDataCompressed() const;
+        bool isIsometric() const;
 
         Update update(sf::Vector2f position);
 
@@ -75,6 +76,6 @@ class Map : public sf::Transformable
         std::map<std::string,Tileset::Ptr> mTilesets;
 };
 
-} // owi
+} // ow
 
-#endif // MAP_HPP
+#endif // OW_MAP_HPP

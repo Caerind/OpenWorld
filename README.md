@@ -1,6 +1,6 @@
-OpenWorldIso
-============
+OpenWorld
+=========
 
-Look at OpenWorldOrtho : https://github.com/Cmdu76/OpenWorldOrtho
+The goal of this project is to manage a 2d open world for video games.
 
-This project is exactly the same, but for Isometric render (staggered isometric)
+

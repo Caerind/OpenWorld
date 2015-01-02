@@ -1,5 +1,5 @@
-#ifndef CHUNK_HPP
-#define CHUNK_HPP
+#ifndef OW_CHUNK_HPP
+#define OW_CHUNK_HPP
 
 #include <fstream>
 #include <iostream>
@@ -16,7 +16,7 @@
 #include "Layer.hpp"
 #include "Tileset.hpp"
 
-namespace owi
+namespace ow
 {
 
 class Map;
@@ -59,6 +59,6 @@ class Chunk : public sf::Transformable
         std::vector<Layer> mLayers;
 };
 
-} // owi
+} // ow
 
-#endif // CHUNK_HPP
+#endif // OW_CHUNK_HPP
