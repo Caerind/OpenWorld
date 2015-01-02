@@ -165,7 +165,9 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
         }
         states.transform *= layerOffset;
         if (isIsometric())
-            viewRect.top += (-mSettings.texSize.y+mSettings.tileSize.y);
+        {
+            viewRect.height += 2 * mSettings.texSize.y;
+        }
     }
 
     #ifdef OW_INFO
