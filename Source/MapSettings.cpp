@@ -11,7 +11,6 @@ MapSettings::MapSettings()
     texSize = sf::Vector2i(0,0);
     isometric = false;
     onlineMode = false;
-    isServer = false;
     generator = nullptr;
     compressedData = false;
 }

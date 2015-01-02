@@ -210,7 +210,7 @@ void Map::initChunks(sf::Vector2i pos)
     {
         for (int i = -1; i < 2; i++)
         {
-            if (mSettings.onlineMode && !mSettings.isServer)
+            if (mSettings.onlineMode)
             {
                 requestChunk(sf::Vector2i(pos.x+i,pos.y+j));
             }
@@ -237,7 +237,7 @@ void Map::loadChunks(sf::Vector2i pos)
     {
         for (int i = -1; i < 2; i++)
         {
-            if (mSettings.onlineMode && !mSettings.isServer)
+            if (mSettings.onlineMode)
             {
                 requestChunk(sf::Vector2i(pos.x+i,pos.y+j));
             }

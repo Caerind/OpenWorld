@@ -23,7 +23,6 @@ struct MapSettings
     bool onlineMode;
 
     // Online Mode Properties
-    bool isServer;
 
 
 
