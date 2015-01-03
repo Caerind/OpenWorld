@@ -107,37 +107,6 @@ Map::Update Map::update(sf::Vector2f position)
     return Update::Nothing;
 }
 
-void Map::render(unsigned int layer, sf::RenderTarget& target) const
-{
-    #ifdef OW_INFO
-    sf::Clock clock;
-    #endif // OW_INFO
-
-    sf::RenderStates states;
-    states.transform *= getTransform();
-    unsigned int maxLayer = getMaxLayer();
-    sf::Transform layerOffset;
-
-    if (isIsometric())
-        layerOffset.translate(0,-mSettings.texSize.y+mSettings.tileSize.y);
-
-    for (unsigned int h = 0; h < maxLayer; h++)
-    {
-        for (unsigned int j = 0; j < static_cast<unsigned int>(3 * mSettings.chunkSize.y); j++)
-        {
-            for (unsigned int i = 0; i < 3; i++)
-            {
-                mChunks[i][j/mSettings.chunkSize.y].render(j%mSettings.chunkSize.y,h,target,states);
-            }
-        }
-        states.transform *= layerOffset;
-    }
-
-    #ifdef OW_INFO
-    std::cout << "Map: Drawn in : " << clock.restart().asSeconds() << " s" << std::endl;
-    #endif // OW_INFO
-}
-
 void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect viewRect) const
 {
     #ifdef OW_INFO
@@ -158,14 +127,14 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
         {
             for (unsigned int i = 0; i < 3; i++)
             {
-                if (mChunks[i][j/mSettings.chunkSize.y].getBounds().intersects(viewRect))
+                if ((viewRect != sf::FloatRect(0,0,0,0) && mChunks[i][j/mSettings.chunkSize.y].getBounds().intersects(viewRect)) || viewRect == sf::FloatRect(0,0,0,0))
                 {
                     mChunks[i][j/mSettings.chunkSize.y].render(j%mSettings.chunkSize.y,h,target,states,viewRect);
                 }
             }
         }
         states.transform *= layerOffset;
-        if (isIsometric())
+        if (isIsometric() && viewRect != sf::FloatRect(0,0,0,0))
         {
             viewRect.height += 2 * mSettings.texSize.y;
         }

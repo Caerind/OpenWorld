@@ -146,28 +146,16 @@ bool Chunk::saveToFile(std::string const& filename)
     return true;
 }
 
-void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& target, sf::RenderStates states) const
-{
-    if (layer >= 0 && layer < getLayerCount())
-    {
-        states.transform *= getTransform();
-        mLayers[layer].render(line,target,states);
-    }
-    else if (layer < 0)
-    {
-        #ifdef OW_DEBUG
-        std::cout << "Chunk: Uncorrect Layer : " << layer << std::endl;
-        #endif // OW_DEBUG
-    }
-}
-
 void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& target, sf::RenderStates states, sf::FloatRect viewRect) const
 {
     if (layer >= 0 && layer < getLayerCount())
     {
         states.transform *= getTransform();
-        if (true) // Add the condition to draw depending on the view here
+        // Add the condition to draw depending on the view instead of "true"
+        if ((viewRect != sf::FloatRect(0,0,0,0) && true) || viewRect == sf::FloatRect(0,0,0,0))
+        {
             mLayers[layer].render(line,target,states);
+        }
     }
     else if (layer < 0)
     {

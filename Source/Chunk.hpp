@@ -30,8 +30,7 @@ class Chunk : public sf::Transformable
         bool loadFromFile(std::string const& filename);
         bool saveToFile(std::string const& filename);
 
-        void render(unsigned int line, unsigned int layer, sf::RenderTarget& target, sf::RenderStates states) const;
-        void render(unsigned int line, unsigned int layer, sf::RenderTarget& target, sf::RenderStates states, sf::FloatRect viewRect) const;
+        void render(unsigned int line, unsigned int layer, sf::RenderTarget& target, sf::RenderStates states, sf::FloatRect viewRect = sf::FloatRect(0,0,0,0)) const;
 
         void setPos(sf::Vector2i pos);
         sf::Vector2i getPos() const;

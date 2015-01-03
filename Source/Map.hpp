@@ -47,8 +47,7 @@ class Map : public sf::Transformable
 
         Update update(sf::Vector2f position);
 
-        void render(unsigned int layer, sf::RenderTarget& target) const;
-        void render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect viewRect) const;
+        void render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect viewRect = sf::FloatRect(0,0,0,0)) const;
 
         Tileset::Ptr getTileset(std::string const& filename);
         bool loadTileset(std::string const& filename);
