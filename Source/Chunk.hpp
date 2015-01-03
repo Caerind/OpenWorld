@@ -13,6 +13,8 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/System/Vector2.hpp>
 
+#include <SFML/Graphics/RectangleShape.hpp>
+
 #include "Layer.hpp"
 #include "Tileset.hpp"
 #include "CompressionUtils.hpp"

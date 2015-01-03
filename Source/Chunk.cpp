@@ -151,8 +151,37 @@ void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& targ
     if (layer >= 0 && layer < getLayerCount())
     {
         states.transform *= getTransform();
-        // Add the condition to draw depending on the view instead of "true"
-        if ((viewRect != sf::FloatRect(0,0,0,0) && true) || viewRect == sf::FloatRect(0,0,0,0))
+
+        if (viewRect != sf::FloatRect(0,0,0,0))
+        {
+            /*sf::FloatRect rect;
+
+            rect.left = getPos().x * getSize().x * getTileSize().x;
+            rect.width = getSize().x * getTileSize().x;
+
+            rect.top = getPos().y * getSize().y * getTileSize().y;
+            rect.top += line * getTileSize().y;
+
+            rect.height = getTexSize().y;
+
+            if (isIsometric())
+            {
+                if (line%2==1)
+                {
+                    rect.left += 0.5f * getTileSize().x;
+                    rect.top += 0.5f * getTileSize().y;
+                }
+                //rect.height = getTexSize().y;
+
+                // add layer height modification
+                //rect.top -=  * layer;
+            }
+
+            if (rect.intersects(viewRect))
+            */
+            mLayers[layer].render(line,target,states);
+        }
+        else
         {
             mLayers[layer].render(line,target,states);
         }
