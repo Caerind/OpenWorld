@@ -15,7 +15,7 @@ Map::Map(MapSettings const& settings)
     }
     mSettings.generator->setMap(this);
     createDirectory(mSettings.directory);
-    initChunks();
+    loadChunks(sf::Vector2i(0,0),false);
 }
 
 sf::Vector2i Map::getChunkSize() const
@@ -101,6 +101,7 @@ Map::Update Map::update(sf::Vector2f position)
         else
         {
             loadChunks(pos);
+            return Update::Unknown;
         }
     }
     return Update::Nothing;
@@ -201,7 +202,7 @@ bool Map::loadTileset(std::string const& filename)
     return true;
 }
 
-void Map::initChunks(sf::Vector2i pos)
+void Map::loadChunks(sf::Vector2i pos, bool saveFirst)
 {
     #ifdef OW_INFO
     sf::Clock clock;
@@ -216,34 +217,11 @@ void Map::initChunks(sf::Vector2i pos)
             }
             else
             {
-                if (!mChunks[i+1][j+1].loadFromFile(mSettings.directory + std::to_string(pos.x+i) + "_" + std::to_string(pos.y+j) + ".chunk"))
+                if (saveFirst && !mSettings.onlineMode)
                 {
-                    mSettings.generator->createChunk(mChunks[i+1][j+1],sf::Vector2i(pos.x+i,pos.y+j));
+                    mChunks[i+1][j+1].saveToFile(mSettings.directory + std::to_string(mChunks[i+1][j+1].getPos().x) + "_" + std::to_string(mChunks[i+1][j+1].getPos().y) + ".chunk");
                 }
-            }
-        }
-    }
-    #ifdef OW_INFO
-    std::cout << "Map: Chunks initialized in : " << clock.restart().asSeconds() << " s" << std::endl;
-    #endif // OW_INFO
-}
 
-void Map::loadChunks(sf::Vector2i pos)
-{
-    #ifdef OW_INFO
-    sf::Clock clock;
-    #endif // OW_INFO
-    for (int j = -1; j < 2; j++)
-    {
-        for (int i = -1; i < 2; i++)
-        {
-            if (mSettings.onlineMode)
-            {
-                requestChunk(sf::Vector2i(pos.x+i,pos.y+j));
-            }
-            else
-            {
-                mChunks[i+1][j+1].saveToFile(mSettings.directory + std::to_string(mChunks[i+1][j+1].getPos().x) + "_" + std::to_string(mChunks[i+1][j+1].getPos().y) + ".chunk");
                 if (!mChunks[i+1][j+1].loadFromFile(mSettings.directory + std::to_string(pos.x+i) + "_" + std::to_string(pos.y+j) + ".chunk"))
                 {
                     mSettings.generator->createChunk(mChunks[i+1][j+1],sf::Vector2i(pos.x+i,pos.y+j));

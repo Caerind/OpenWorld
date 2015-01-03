@@ -32,6 +32,7 @@ class Map : public sf::Transformable
             BL,
             B,
             BR,
+            Unknown,
         };
 
     public:
@@ -52,8 +53,7 @@ class Map : public sf::Transformable
         Tileset::Ptr getTileset(std::string const& filename);
         bool loadTileset(std::string const& filename);
 
-        void initChunks(sf::Vector2i pos = sf::Vector2i(0,0));
-        void loadChunks(sf::Vector2i pos);
+        void loadChunks(sf::Vector2i pos = sf::Vector2i(0,0), bool saveFirst = true);
         void requestChunk(sf::Vector2i pos);
 
     private:
