@@ -154,13 +154,24 @@ void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& targ
 
         if (viewRect != sf::FloatRect(0,0,0,0))
         {
-            /*sf::FloatRect rect;
+            /*
+
+            Need to work on this,
+
+            I don't know why this isn't working....
+
+
+
+
+
+            sf::FloatRect rect;
 
             rect.left = getPos().x * getSize().x * getTileSize().x;
-            rect.width = getSize().x * getTileSize().x;
 
             rect.top = getPos().y * getSize().y * getTileSize().y;
             rect.top += line * getTileSize().y;
+
+            rect.width = getSize().x * getTileSize().x;
 
             rect.height = getTexSize().y;
 
@@ -177,9 +188,8 @@ void Chunk::render(unsigned int line, unsigned int layer, sf::RenderTarget& targ
                 //rect.top -=  * layer;
             }
 
-            if (rect.intersects(viewRect))
-            */
-            mLayers[layer].render(line,target,states);
+            if (viewRect.intersects(rect))
+                */mLayers[layer].render(line,target,states);
         }
         else
         {

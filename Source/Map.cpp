@@ -136,7 +136,7 @@ void Map::render(unsigned int layer, sf::RenderTarget& target, sf::FloatRect vie
         states.transform *= layerOffset;
         if (isIsometric() && viewRect != sf::FloatRect(0,0,0,0))
         {
-            viewRect.height += 2 * mSettings.texSize.y;
+            viewRect.height += mSettings.texSize.y;
         }
     }
 
@@ -186,11 +186,10 @@ void Map::loadChunks(sf::Vector2i pos, bool saveFirst)
             }
             else
             {
-                if (saveFirst && !mSettings.onlineMode)
+                if (saveFirst)
                 {
                     mChunks[i+1][j+1].saveToFile(mSettings.directory + std::to_string(mChunks[i+1][j+1].getPos().x) + "_" + std::to_string(mChunks[i+1][j+1].getPos().y) + ".chunk");
                 }
-
                 if (!mChunks[i+1][j+1].loadFromFile(mSettings.directory + std::to_string(pos.x+i) + "_" + std::to_string(pos.y+j) + ".chunk"))
                 {
                     mSettings.generator->createChunk(mChunks[i+1][j+1],sf::Vector2i(pos.x+i,pos.y+j));
@@ -216,11 +215,103 @@ void Map::createDirectory(std::string const& filename)
 
 void Map::moveTL(sf::Vector2i pos)
 {
+    /*
+
+    Need to work on this,
+
+    Actually there is a problem with rendering during the frame on which you move all chunks
+    And I don't know why...
+
+    if (!mSettings.onlineMode)
+    {
+        mChunks[0][0].saveToFile(mSettings.directory + std::to_string(mChunks[0][0].getPos().x) + "_" + std::to_string(mChunks[0][0].getPos().y) + ".chunk");
+        mChunks[1][0].saveToFile(mSettings.directory + std::to_string(mChunks[1][0].getPos().x) + "_" + std::to_string(mChunks[1][0].getPos().y) + ".chunk");
+        mChunks[2][0].saveToFile(mSettings.directory + std::to_string(mChunks[2][0].getPos().x) + "_" + std::to_string(mChunks[2][0].getPos().y) + ".chunk");
+        mChunks[0][1].saveToFile(mSettings.directory + std::to_string(mChunks[0][1].getPos().x) + "_" + std::to_string(mChunks[0][1].getPos().y) + ".chunk");
+        mChunks[0][2].saveToFile(mSettings.directory + std::to_string(mChunks[0][2].getPos().x) + "_" + std::to_string(mChunks[0][2].getPos().y) + ".chunk");
+    }
+
+    mChunks[0][0] = mChunks[1][1];
+    mChunks[1][0] = mChunks[2][1];
+    mChunks[0][1] = mChunks[1][2];
+    mChunks[1][1] = mChunks[2][2];
+
+    if (!mSettings.onlineMode)
+    {
+        if(!mChunks[2][0].loadFromFile(mSettings.directory + std::to_string(pos.x+1) + "_" + std::to_string(pos.y-1) + ".chunk"))
+        {
+            mSettings.generator->createChunk(mChunks[2][0],sf::Vector2i(pos.x+1,pos.y-1));
+        }
+        if(!mChunks[2][1].loadFromFile(mSettings.directory + std::to_string(pos.x+1) + "_" + std::to_string(pos.y) + ".chunk"))
+        {
+            mSettings.generator->createChunk(mChunks[2][1],sf::Vector2i(pos.x+1,pos.y));
+        }
+        if(!mChunks[2][2].loadFromFile(mSettings.directory + std::to_string(pos.x+1) + "_" + std::to_string(pos.y+1) + ".chunk"))
+        {
+            mSettings.generator->createChunk(mChunks[2][2],sf::Vector2i(pos.x+1,pos.y+1));
+        }
+        if(!mChunks[1][2].loadFromFile(mSettings.directory + std::to_string(pos.x) + "_" + std::to_string(pos.y+1) + ".chunk"))
+        {
+            mSettings.generator->createChunk(mChunks[1][2],sf::Vector2i(pos.x,pos.y+1));
+        }
+        if(!mChunks[0][2].loadFromFile(mSettings.directory + std::to_string(pos.x-1) + "_" + std::to_string(pos.y+1) + ".chunk"))
+        {
+            mSettings.generator->createChunk(mChunks[0][2],sf::Vector2i(pos.x-1,pos.y+1));
+        }
+    }
+    else
+    {
+
+    }
+    */
+
     loadChunks(pos);
 }
 
 void Map::moveT(sf::Vector2i pos)
 {
+    /*
+
+    Need to work on this,
+
+    Actually there is a problem with rendering during the frame on which you move all chunks
+    And I don't know why...
+
+    if (!mSettings.onlineMode)
+    {
+        mChunks[0][0].saveToFile(mSettings.directory + std::to_string(mChunks[0][0].getPos().x) + "_" + std::to_string(mChunks[0][0].getPos().y) + ".chunk");
+        mChunks[1][0].saveToFile(mSettings.directory + std::to_string(mChunks[1][0].getPos().x) + "_" + std::to_string(mChunks[1][0].getPos().y) + ".chunk");
+        mChunks[2][0].saveToFile(mSettings.directory + std::to_string(mChunks[2][0].getPos().x) + "_" + std::to_string(mChunks[2][0].getPos().y) + ".chunk");
+    }
+
+    mChunks[0][0] = mChunks[0][1];
+    mChunks[1][0] = mChunks[1][1];
+    mChunks[2][0] = mChunks[2][1];
+    mChunks[0][1] = mChunks[0][2];
+    mChunks[1][1] = mChunks[1][2];
+    mChunks[2][1] = mChunks[2][2];
+
+    if (!mSettings.onlineMode)
+    {
+        if(!mChunks[0][2].loadFromFile(mSettings.directory + std::to_string(pos.x-1) + "_" + std::to_string(pos.y+1) + ".chunk"))
+        {
+            mSettings.generator->createChunk(mChunks[0][2],sf::Vector2i(pos.x-1,pos.y+1));
+        }
+        if(!mChunks[1][2].loadFromFile(mSettings.directory + std::to_string(pos.x) + "_" + std::to_string(pos.y+1) + ".chunk"))
+        {
+            mSettings.generator->createChunk(mChunks[1][2],sf::Vector2i(pos.x,pos.y+1));
+        }
+        if(!mChunks[2][2].loadFromFile(mSettings.directory + std::to_string(pos.x+1) + "_" + std::to_string(pos.y+1) + ".chunk"))
+        {
+            mSettings.generator->createChunk(mChunks[2][2],sf::Vector2i(pos.x+1,pos.y+1));
+        }
+    }
+    else
+    {
+
+    }
+    */
+
     loadChunks(pos);
 }
 
