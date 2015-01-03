@@ -89,7 +89,11 @@ int Tileset::getId(sf::Vector2f texCoords) const
 {
     if (mTexture != nullptr && texCoords.x >= 0 && texCoords.y >= 0 && mMap != nullptr)
     {
-        return texCoords.x / mMap->getTexSize().x + texCoords.y / mMap->getTexSize().y * mMap->getTexSize().x / mTexture->getSize().x;
+        int x = texCoords.x / mMap->getTexSize().x;
+        int y = texCoords.y / mMap->getTexSize().y;
+        int tilePerLine = mTexture->getSize().x / mMap->getTexSize().x;
+        int id = x + y * tilePerLine;
+        return id;
     }
     else if (mMap == nullptr)
     {
