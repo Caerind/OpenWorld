@@ -50,8 +50,6 @@ class Editor
         bool mInitialized;
         bool mOverlay;
 
-        bool mMouseEditMap;
-
         sf::RenderWindow mWindow;
 
         float mMapSpeed;

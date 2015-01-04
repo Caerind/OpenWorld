@@ -88,8 +88,6 @@ void Editor::handleEvent()
 
     sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
 
-    mMouseEditMap = true;
-
     sf::Event event;
     if (!mOverlay && mWindow.pollEvent(event))
     {
@@ -100,8 +98,6 @@ void Editor::handleEvent()
         {
             if (rButtonNew.contains(mousePos))
             {
-                mMouseEditMap = false;
-
                 openOverlay();
 
                 if (mInitialized)
@@ -169,8 +165,6 @@ void Editor::handleEvent()
             }
             else if (rButtonOpen.contains(mousePos))
             {
-                mMouseEditMap = false;
-
                 openOverlay();
 
                 if (mInitialized)
@@ -212,8 +206,6 @@ void Editor::handleEvent()
             }
             else if (rButtonSave.contains(mousePos))
             {
-                mMouseEditMap = false;
-
                 if (mInitialized)
                 {
                     std::cout << "Saving... " << std::endl;
@@ -224,7 +216,6 @@ void Editor::handleEvent()
             }
             else if (rButtonLayerP.contains(mousePos))
             {
-                mMouseEditMap = false;
                 mActualLayer++;
                 for (int j = -1; j < 2; j++)
                     for (int i = -1; i < 2; i++)
@@ -234,14 +225,12 @@ void Editor::handleEvent()
             }
             else if (rButtonLayerM.contains(mousePos))
             {
-                mMouseEditMap = false;
                 if (mActualLayer > 0)
                     mActualLayer--;
                 std::cout << "New Layer : " << mActualLayer << std::endl;
             }
             else if (static_cast<sf::IntRect>(mTilesetRect).contains(mousePos))
             {
-                mMouseEditMap = false;
                 if (mInitialized && mTileset != nullptr)
                 {
                     if (mTileset->getTexture() != nullptr)
@@ -340,7 +329,7 @@ void Editor::update(sf::Time dt)
         }
     }
 
-    if (mMouseEditMap && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
         sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
         if (static_cast<sf::IntRect>(mMapRect).contains(mousePos))
@@ -362,14 +351,25 @@ void Editor::update(sf::Time dt)
                 if (x < 0) pos.x--;
                 if (y < 0) pos.y--;
 
+                std::cout << "MousePos : " << mouse.x << " " << mouse.y << std::endl;
+
                 mouse.x -= pos.x * mChunkSize.x * mTileSize.x;
-                mouse.y -= pos.y * mChunkSize.y * mTileSize.y;
+                if (mIsometric)
+                    mouse.y -= pos.y * mChunkSize.y * mTileSize.y * 0.5f;
+                else
+                    mouse.y -= pos.y * mChunkSize.y * mTileSize.y;
 
                 sf::Vector2i tilePos;
                 if (mIsometric)
                     tilePos = toIsoPos(mouse);
                 else
                     tilePos = toOrthoPos(mouse);
+
+                std::cout << "Size : " << mChunkSize.x * mTileSize.x << " " << mChunkSize.y * mTileSize.y << std::endl;
+                std::cout << "Chunk : " << pos.x << " " << pos.y << std::endl;
+                std::cout << "Mouse : " << mouse.x << " " << mouse.y << std::endl;
+                std::cout << "Tile : " << tilePos.x << " " << tilePos.y << std::endl;
+                std::cout << std::endl;
 
                 for (int j = -1; j < 2; j++)
                     for (int i = -1; i < 2; i++)
@@ -393,7 +393,7 @@ void Editor::render()
         unsigned int maxLayer = getMaxLayer();
         sf::Transform layerOffset;
 
-        if (isIsometric())
+        if (mIsometric)
             layerOffset.translate(0,-mTexSize.y+mTileSize.y);
 
         for (unsigned int h = 0; h < maxLayer; h++)
@@ -405,7 +405,8 @@ void Editor::render()
                     mChunks[i][j/mChunkSize.y].render(j%mChunkSize.y,h,mWindow,states);
                 }
             }
-            states.transform *= layerOffset;
+            if (mIsometric)
+                states.transform *= layerOffset;
         }
     }
 
@@ -422,6 +423,7 @@ void Editor::render()
         if (mTileset->getTexture() != nullptr)
         {
             mSprite.setTexture(*(mTileset->getTexture().get()));
+            mWindow.draw(mSprite);
             if (mTexSize.x != 0 && mTexSize.y != 0)
             {
                 sf::RectangleShape id;
@@ -434,7 +436,6 @@ void Editor::render()
                 mWindow.draw(id);
             }
         }
-    mWindow.draw(mSprite);
 
     mWindow.setView(mWindow.getDefaultView());
 

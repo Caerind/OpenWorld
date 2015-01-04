@@ -41,7 +41,10 @@ bool Chunk::loadFromFile(std::string const& filename)
     mPos.x = std::stoi(line.substr(0,line.find(":")));
     mPos.y = std::stoi(line.substr(line.find(":")+1,line.size()));
 
-    sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y * 0.5f));
+    if (mParent->isIsometric())
+        sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y * 0.5f));
+    else
+        sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y));
 
     // Read Tileset
     std::getline(file,line);
@@ -208,7 +211,12 @@ void Chunk::setPos(sf::Vector2i pos)
 {
     mPos = pos;
     if (mParent != nullptr)
-        sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y * 0.5f));
+    {
+        if (mParent->isIsometric())
+            sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y * 0.5f));
+        else
+            sf::Transformable::setPosition(sf::Vector2f(mPos.x * mParent->getTileSize().x * mParent->getChunkSize().x, mPos.y * mParent->getTileSize().y * mParent->getChunkSize().y));
+    }
 }
 
 sf::Vector2i Chunk::getPos() const
