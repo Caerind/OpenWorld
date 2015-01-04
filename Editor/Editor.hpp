@@ -38,11 +38,14 @@ class Editor
         Tileset::Ptr getTileset(std::string const& name);
         bool loadTileset(std::string const& filename);
 
-    protected:
+        void openOverlay();
+        void closeOverlay();
+
         unsigned int getMaxLayer() const;
 
     protected:
         bool mInitialized;
+        bool mOverlay;
 
         sf::RenderWindow mWindow;
 
@@ -80,7 +83,7 @@ class Editor
         bool mIsometric;
         bool mCompressed;
 
-        std::map<std::string,Tileset::Ptr> mTilesets;
+        Tileset::Ptr mTileset;
 
         std::array<std::array<Chunk,3>,3> mChunks;
 

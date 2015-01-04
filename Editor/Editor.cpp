@@ -9,6 +9,10 @@ Editor::Editor()
 , {Chunk(this),Chunk(this),Chunk(this)} }})
 {
     mInitialized = false;
+    mOverlay = false;
+
+    mActualId = 0;
+    mActualLayer = 0;
 
     mWindow.create(sf::VideoMode(1200,600),"Map Editor");
 
@@ -82,7 +86,7 @@ void Editor::handleEvent()
     sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
 
     sf::Event event;
-    if (mWindow.pollEvent(event))
+    if (!mOverlay && mWindow.pollEvent(event))
     {
         if (event.type == sf::Event::Closed)
             stop();
@@ -91,35 +95,59 @@ void Editor::handleEvent()
         {
             if (rButtonNew.contains(mousePos))
             {
+                openOverlay();
+
                 if (mInitialized)
                 {
-
+                    // On demande la sauvegarde et on la traite
                 }
+
+                // On demande les paramètres
+                // On les sauvegardes
+
+                if (mTileset != nullptr)
+                    mSprite.setTexture(*mTileset->getTexture().get());
+
+                mInitialized = true;
+
+                closeOverlay();
             }
             else if (rButtonOpen.contains(mousePos))
             {
+                openOverlay();
+
                 if (mInitialized)
                 {
-
+                    // On demande la sauvegarde et on la traite
                 }
+
+                // On ouvre la map en fonction des fichiers settings
+
+                mInitialized = true;
+
+                closeOverlay();
             }
             else if (rButtonSave.contains(mousePos))
             {
                 if (mInitialized)
                 {
-
+                    // On sauvegarde que les chunks
                 }
             }
             else if (rButtonLayerP.contains(mousePos))
             {
                 mActualLayer++;
+                std::cout << "New Layer : " << mActualLayer << std::endl;
             }
             else if (rButtonLayerM.contains(mousePos))
             {
-                mActualLayer--;
+                if (mActualLayer > 0)
+                    mActualLayer--;
+                std::cout << "New Layer : " << mActualLayer << std::endl;
             }
             else if (static_cast<sf::IntRect>(mMapRect).contains(mousePos))
             {
+                // Il faudra prevoir le fait qu'on puisse cliquer sur différents layers et donc "bouger" la souris
                 if (mInitialized)
                 {
                     sf::Vector2f mouse = mWindow.mapPixelToCoords(mousePos,mMapView);
@@ -190,7 +218,7 @@ void Editor::update(sf::Time dt)
                     mChunks[i+1][j+1].saveToFile(mDirectory + std::to_string(mChunks[i+1][j+1].getPos().x) + "_" + std::to_string(mChunks[i+1][j+1].getPos().y) + ".chunk");
                     if (!mChunks[i+1][j+1].loadFromFile(mDirectory + std::to_string(pos.x+i) + "_" + std::to_string(pos.y+j) + ".chunk"))
                     {
-                        //mChunks[i+1][j+1].setTileset()
+                        mChunks[i+1][j+1].setTileset(mTileset);
                         mChunks[i+1][j+1].setPos(sf::Vector2i(pos.x+i,pos.y+j));
                         mChunks[i+1][j+1].clearLayers();
                         mChunks[i+1][j+1].addLayer();
@@ -207,7 +235,7 @@ void Editor::update(sf::Time dt)
         {
             for (int i = -1; i < 2; i++)
             {
-                //mChunks[i+1][j+1].setTileset()
+                mChunks[i+1][j+1].setTileset(mTileset);
                 mChunks[i+1][j+1].setPos(sf::Vector2i(pos.x+i,pos.y+j));
                 mChunks[i+1][j+1].clearLayers();
             }
@@ -266,6 +294,20 @@ void Editor::render()
     mWindow.draw(mTextLayerP);
     mWindow.draw(mButtonLayerM);
     mWindow.draw(mTextLayerM);
+
+    if (mOverlay)
+    {
+        sf::RectangleShape overlay;
+        overlay.setSize(sf::Vector2f(800,400));
+        overlay.setPosition(200,100);
+        overlay.setFillColor(sf::Color(76,76,76));
+
+        sf::Text text("Follow Console Instructions",mFont);
+        text.setPosition(350,250);
+
+        mWindow.draw(overlay);
+        mWindow.draw(text);
+    }
 
     mWindow.display();
 }
@@ -331,21 +373,21 @@ bool Editor::isDataCompressed() const
 
 Tileset::Ptr Editor::getTileset(std::string const& filename)
 {
-    if (mTilesets.find(filename) != mTilesets.end())
+    if (mTileset->getFilename() == filename)
     {
-        return mTilesets[filename];
+        return mTileset;
     }
     else
     {
         loadTileset(filename);
-        return mTilesets[filename];
+        return mTileset;
     }
 }
 
 bool Editor::loadTileset(std::string const& filename)
 {
-    mTilesets[filename] = std::make_shared<Tileset>(this);
-    if (!mTilesets[filename]->loadFromFile(filename))
+    mTileset = std::make_shared<Tileset>(this);
+    if (!mTileset->loadFromFile(filename))
     {
         #ifdef OW_DEBUG
         std::cout << "Map: Cant load texture : " << filename << std::endl;
@@ -353,6 +395,18 @@ bool Editor::loadTileset(std::string const& filename)
         return false;
     }
     return true;
+}
+
+void Editor::openOverlay()
+{
+    mOverlay = true;
+    render();
+}
+
+void Editor::closeOverlay()
+{
+    mOverlay = false;
+    std::cout << "Get Back To The Editor" << std::endl;
 }
 
 unsigned int Editor::getMaxLayer() const
