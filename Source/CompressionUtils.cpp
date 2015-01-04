@@ -176,4 +176,26 @@ bool CompressionUtils::compressString(std::string& data)
     return true;
 }
 
+void CompressionUtils::uncompressLine(std::string& line)
+{
+    std::string tempLine = line;
+    if (!CompressionUtils::base64_decode(tempLine))
+    {
+        return;
+    }
+    if (!CompressionUtils::decompressString(tempLine))
+    {
+        return;
+    }
+    line = tempLine;
+}
+
+std::string CompressionUtils::compressLine(std::string const& line)
+{
+    std::string tempLine = line;
+    CompressionUtils::compressString(tempLine);
+    CompressionUtils::base64_encode(tempLine);
+    return tempLine;
+}
+
 } // ow

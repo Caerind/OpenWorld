@@ -14,12 +14,15 @@ namespace ow
 class CompressionUtils
 {
     public:
+        static void uncompressLine(std::string& line);
+        static std::string compressLine(std::string const& line);
+
+    private:
         static bool base64_encode(std::string& data);
         static bool base64_decode(std::string& data);
         static bool decompressString(std::string& data);
         static bool compressString(std::string& data);
 
-    private:
         static const std::string base64_table;
 
         static inline bool is_valid_base64(unsigned char c)

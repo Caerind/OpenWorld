@@ -69,7 +69,7 @@ bool Chunk::loadFromFile(std::string const& filename)
         {
             std::getline(file,line);
             if (mParent->isDataCompressed())
-                uncompressLine(line);
+                CompressionUtils::uncompressLine(line);
             std::stringstream ss(line);
             std::string temp;
             for (int i = 0; i < mParent->getChunkSize().x; i++)
@@ -137,7 +137,7 @@ bool Chunk::saveToFile(std::string const& filename)
             }
 
             if (mParent->isDataCompressed())
-                file << compressLine(lineIds);
+                file << CompressionUtils::compressLine(lineIds);
 
             file << std::endl;
         }
@@ -298,28 +298,6 @@ void Chunk::setTileset(Tileset::Ptr tileset)
 Tileset::Ptr Chunk::getTileset() const
 {
     return mTileset;
-}
-
-void Chunk::uncompressLine(std::string& line)
-{
-    std::string tempLine = line;
-    if (!CompressionUtils::base64_decode(tempLine))
-    {
-        return;
-    }
-    if (!CompressionUtils::decompressString(tempLine))
-    {
-        return;
-    }
-    line = tempLine;
-}
-
-std::string Chunk::compressLine(std::string const& line)
-{
-    std::string tempLine = line;
-    CompressionUtils::compressString(tempLine);
-    CompressionUtils::base64_encode(tempLine);
-    return tempLine;
 }
 
 } // owe

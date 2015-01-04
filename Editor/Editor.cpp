@@ -135,7 +135,6 @@ void Editor::handleEvent()
                 else
                     mIsometric = false;
 
-                std::string c;
                 std::cout << "Compressed ? : (Y/N)";
                 std::cin >> c;
                 if (c == "Y")

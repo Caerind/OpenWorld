@@ -2,6 +2,7 @@
 #define OW_MAPSETTINGS_HPP
 
 #include <string>
+#include <fstream>
 
 #include <SFML/System/Vector2.hpp>
 
@@ -13,6 +14,9 @@ namespace ow
 struct MapSettings
 {
     MapSettings();
+
+    bool loadFromFile(std::string const& directory);
+    bool saveToFile();
 
     std::string directory;
     sf::Vector2i chunkSize;
