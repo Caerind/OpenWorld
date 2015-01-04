@@ -99,14 +99,49 @@ void Editor::handleEvent()
 
                 if (mInitialized)
                 {
-                    // On demande la sauvegarde et on la traite
+                    // On sauvegarde
                 }
 
-                // On demande les paramètres
-                // On les sauvegardes
+                std::cout << "Enter the directory name (Need to exist) : ";
+                std::cin >> mDirectory;
 
+                std::string tilesetName;
+                std::cout << "Default Tileset Name : ";
+                std::cin >> tilesetName;
+                loadTileset(mDirectory + tilesetName);
                 if (mTileset != nullptr)
                     mSprite.setTexture(*mTileset->getTexture().get());
+
+                std::cout << "Chunk Size X : ";
+                std::cin >> mChunkSize.x;
+                std::cout << "Chunk Size Y : ";
+                std::cin >> mChunkSize.y;
+
+                std::cout << "Tile Size X : ";
+                std::cin >> mTileSize.x;
+                std::cout << "Tile Size Y : ";
+                std::cin >> mTileSize.y;
+
+                std::cout << "Tex Size X : ";
+                std::cin >> mTexSize.x;
+                std::cout << "Tex Size Y : ";
+                std::cin >> mTexSize.y;
+
+                std::string c;
+                std::cout << "Isometric ? : (Y/N)";
+                std::cin >> c;
+                if (c == "Y")
+                    mIsometric = true;
+                else
+                    mIsometric = false;
+
+                std::string c;
+                std::cout << "Compressed ? : (Y/N)";
+                std::cin >> c;
+                if (c == "Y")
+                    mCompressed = true;
+                else
+                    mCompressed = false;
 
                 mInitialized = true;
 
@@ -118,7 +153,7 @@ void Editor::handleEvent()
 
                 if (mInitialized)
                 {
-                    // On demande la sauvegarde et on la traite
+                    // On sauvegarde
                 }
 
                 // On ouvre la map en fonction des fichiers settings
@@ -131,7 +166,13 @@ void Editor::handleEvent()
             {
                 if (mInitialized)
                 {
-                    // On sauvegarde que les chunks
+                    for (int j = -1; j < 2; j++)
+                    {
+                        for (int i = -1; i < 2; i++)
+                        {
+                            mChunks[i+1][j+1].saveToFile(mDirectory + std::to_string(mChunks[i+1][j+1].getPos().x) + "_" + std::to_string(mChunks[i+1][j+1].getPos().y) + ".chunk");
+                        }
+                    }
                 }
             }
             else if (rButtonLayerP.contains(mousePos))
