@@ -2,6 +2,7 @@
 #define OWE_EDITOR_HPP
 
 #include <map>
+#include <fstream>
 
 #include <SFML/Graphics.hpp>
 
@@ -26,8 +27,6 @@ class Editor
         sf::Vector2i toIsoPos(sf::Vector2f pos);
         sf::Vector2i toOrthoPos(sf::Vector2f pos);
 
-        Chunk getActualChunk(sf::Vector2f pos);
-
         std::string getDirectory() const;
         sf::Vector2i getChunkSize() const;
         sf::Vector2i getTileSize() const;
@@ -43,9 +42,15 @@ class Editor
 
         unsigned int getMaxLayer() const;
 
+        bool loadSettings();
+        bool saveSettings();
+        void saveChunks();
+
     protected:
         bool mInitialized;
         bool mOverlay;
+
+        bool mMouseEditMap;
 
         sf::RenderWindow mWindow;
 

@@ -21,38 +21,6 @@ bool MapSettings::loadFromFile(std::string const& directory)
     if (!file)
         return false;
 
-    file << CompressionUtils::compressLine(directory) << std::endl;
-    file << CompressionUtils::compressLine(std::stoi(chunkSize.x)) << std::endl;
-    file << CompressionUtils::compressLine(std::stoi(chunkSize.y)) << std::endl;
-    file << CompressionUtils::compressLine(std::stoi(tileSize.x)) << std::endl;
-    file << CompressionUtils::compressLine(std::stoi(tileSize.y)) << std::endl;
-    file << CompressionUtils::compressLine(std::stoi(texSize.x)) << std::endl;
-    file << CompressionUtils::compressLine(std::stoi(texSize.y)) << std::endl;
-    if (isometric)
-        file << CompressionUtils::compressLine("true") << std::endl;
-    else
-        file << CompressionUtils::compressLine("false") << std::endl;
-    if (compressedData)
-        file << CompressionUtils::compressLine("true") << std::endl;
-    else
-        file << CompressionUtils::compressLine("false") << std::endl;
-    if (onlineMode)
-    {
-        file << CompressionUtils::compressLine("true") << std::endl;
-
-    }
-    else
-        file << CompressionUtils::compressLine("false") << std::endl;
-    file.close();
-    return true;
-}
-
-bool MapSettings::saveToFile()
-{
-    std::ofstream file(directory + ".settings");
-    if (!file)
-        return false;
-
     std::string line;
     unsigned int lineCount = 0;
     while (std::getline(file,line))
@@ -74,6 +42,40 @@ bool MapSettings::saveToFile()
         }
         lineCount++;
     }
+
+    file.close();
+    return true;
+}
+
+bool MapSettings::saveToFile()
+{
+    std::ofstream file(directory + ".settings");
+    if (!file)
+        return false;
+
+    file << CompressionUtils::compressLine(directory) << std::endl;
+    file << CompressionUtils::compressLine(std::to_string(chunkSize.x)) << std::endl;
+    file << CompressionUtils::compressLine(std::to_string(chunkSize.y)) << std::endl;
+    file << CompressionUtils::compressLine(std::to_string(tileSize.x)) << std::endl;
+    file << CompressionUtils::compressLine(std::to_string(tileSize.y)) << std::endl;
+    file << CompressionUtils::compressLine(std::to_string(texSize.x)) << std::endl;
+    file << CompressionUtils::compressLine(std::to_string(texSize.y)) << std::endl;
+    if (isometric)
+        file << CompressionUtils::compressLine("true") << std::endl;
+    else
+        file << CompressionUtils::compressLine("false") << std::endl;
+    if (compressedData)
+        file << CompressionUtils::compressLine("true") << std::endl;
+    else
+        file << CompressionUtils::compressLine("false") << std::endl;
+    if (onlineMode)
+    {
+        file << CompressionUtils::compressLine("true") << std::endl;
+
+    }
+    else
+        file << CompressionUtils::compressLine("false") << std::endl;
+
     file.close();
     return true;
 }

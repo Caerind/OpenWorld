@@ -22,8 +22,9 @@ Editor::Editor()
     mMapView.setViewport(sf::FloatRect(0,0,0.75,1));
 
     mTilesetSpeed = 800;
-    mTilesetRect = sf::FloatRect(800,0,400,600);
+    mTilesetRect = sf::FloatRect(0,0,400,600);
     mTilesetView.reset(mTilesetRect);
+    mTilesetRect.left = 800;
     mTilesetView.setViewport(sf::FloatRect(0.75,0,0.25,1));
 
     mFont.loadFromFile("Sansation.ttf");
@@ -85,6 +86,8 @@ void Editor::handleEvent()
 
     sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
 
+    mMouseEditMap = true;
+
     sf::Event event;
     if (!mOverlay && mWindow.pollEvent(event))
     {
@@ -95,11 +98,14 @@ void Editor::handleEvent()
         {
             if (rButtonNew.contains(mousePos))
             {
+                mMouseEditMap = false;
+
                 openOverlay();
 
                 if (mInitialized)
                 {
-                    // On sauvegarde
+                    saveSettings();
+                    saveChunks();
                 }
 
                 std::cout << "Enter the directory name (Need to exist) : ";
@@ -108,9 +114,9 @@ void Editor::handleEvent()
                 std::string tilesetName;
                 std::cout << "Default Tileset Name : ";
                 std::cin >> tilesetName;
-                loadTileset(mDirectory + tilesetName);
-                if (mTileset != nullptr)
-                    mSprite.setTexture(*mTileset->getTexture().get());
+
+                loadTileset(tilesetName);
+                render();
 
                 std::cout << "Chunk Size X : ";
                 std::cin >> mChunkSize.x;
@@ -128,80 +134,100 @@ void Editor::handleEvent()
                 std::cin >> mTexSize.y;
 
                 std::string c;
-                std::cout << "Isometric ? : (Y/N)";
+                std::cout << "Isometric ? (Y/N) : ";
                 std::cin >> c;
                 if (c == "Y")
                     mIsometric = true;
                 else
                     mIsometric = false;
 
-                std::cout << "Compressed ? : (Y/N)";
+                std::cout << "Compressed ? (Y/N) : ";
                 std::cin >> c;
                 if (c == "Y")
                     mCompressed = true;
                 else
                     mCompressed = false;
 
-                mInitialized = true;
+                for (int j = -1; j < 2; j++)
+                {
+                    for (int i = -1; i < 2; i++)
+                    {
+                        mChunks[i+1][j+1].setTileset(mTileset);
+                        mChunks[i+1][j+1].setPos(sf::Vector2i(i,j));
+                        mChunks[i+1][j+1].clearLayers();
+                        mChunks[i+1][j+1].addLayer();
+                        mChunks[i+1][j+1].saveToFile(std::string(mDirectory + std::to_string(i) + "_" + std::to_string(j) + ".chunk"));
+                    }
+                }
+
+                mInitialized = saveSettings();
 
                 closeOverlay();
             }
             else if (rButtonOpen.contains(mousePos))
             {
+                mMouseEditMap = false;
+
                 openOverlay();
 
                 if (mInitialized)
                 {
-                    // On sauvegarde
+                    saveSettings();
+                    saveChunks();
                 }
 
-                // On ouvre la map en fonction des fichiers settings
+                std::cout << "Enter the directory name (Need to exist) : ";
+                std::cin >> mDirectory;
 
-                mInitialized = true;
+                mInitialized = loadSettings();
+
+                std::string tilesetName;
+                std::cout << "Default Tileset Name : ";
+                std::cin >> tilesetName;
+
+                loadTileset(tilesetName);
+                render();
 
                 closeOverlay();
             }
             else if (rButtonSave.contains(mousePos))
             {
+                mMouseEditMap = false;
+
                 if (mInitialized)
                 {
-                    for (int j = -1; j < 2; j++)
-                    {
-                        for (int i = -1; i < 2; i++)
-                        {
-                            mChunks[i+1][j+1].saveToFile(mDirectory + std::to_string(mChunks[i+1][j+1].getPos().x) + "_" + std::to_string(mChunks[i+1][j+1].getPos().y) + ".chunk");
-                        }
-                    }
+                    saveSettings();
+                    saveChunks();
                 }
             }
             else if (rButtonLayerP.contains(mousePos))
             {
+                mMouseEditMap = false;
                 mActualLayer++;
+                for (int j = -1; j < 2; j++)
+                    for (int i = -1; i < 2; i++)
+                        if (mChunks[i+1][j+1].getLayerCount() <= mActualLayer)
+                            mChunks[i+1][j+1].addLayer();
                 std::cout << "New Layer : " << mActualLayer << std::endl;
             }
             else if (rButtonLayerM.contains(mousePos))
             {
+                mMouseEditMap = false;
                 if (mActualLayer > 0)
                     mActualLayer--;
                 std::cout << "New Layer : " << mActualLayer << std::endl;
             }
-            else if (static_cast<sf::IntRect>(mMapRect).contains(mousePos))
-            {
-                // Il faudra prevoir le fait qu'on puisse cliquer sur différents layers et donc "bouger" la souris
-                if (mInitialized)
-                {
-                    sf::Vector2f mouse = mWindow.mapPixelToCoords(mousePos,mMapView);
-                    sf::Vector2i pos;
-                    if (mIsometric)
-                        pos = toIsoPos(mouse);
-                    else
-                        pos = toOrthoPos(mouse);
-                    getActualChunk(mouse).getLayer(mActualLayer)->setTileId(pos.x,pos.y,mActualId);
-                }
-            }
             else if (static_cast<sf::IntRect>(mTilesetRect).contains(mousePos))
             {
-
+                mMouseEditMap = false;
+                if (mInitialized && mTileset != nullptr)
+                {
+                    if (mTileset->getTexture() != nullptr)
+                    {
+                        sf::Vector2f mouse = mWindow.mapPixelToCoords(mousePos,mTilesetView);
+                        mActualId = mTileset->getId(mouse);
+                    }
+                }
             }
         }
     }
@@ -222,20 +248,43 @@ void Editor::update(sf::Time dt)
     movementMap.y *= dt.asSeconds();
     mMapView.move(movementMap);
 
-    sf::Vector2f movementTileset;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        movementTileset.y -= mTilesetSpeed;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        movementTileset.x -= mTilesetSpeed;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        movementTileset.y += mTilesetSpeed;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        movementTileset.x += mTilesetSpeed;
-    movementTileset.x *= dt.asSeconds();
-    movementTileset.y *= dt.asSeconds();
-    mTilesetView.move(movementTileset);
+    if (mTileset != nullptr)
+    {
+        if (mTileset->getTexture() != nullptr)
+        {
+            sf::Vector2f movementTileset;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+                movementTileset.y -= mTilesetSpeed;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+                movementTileset.x -= mTilesetSpeed;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+                movementTileset.y += mTilesetSpeed;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                movementTileset.x += mTilesetSpeed;
+            movementTileset.x *= dt.asSeconds();
+            movementTileset.y *= dt.asSeconds();
+            mTilesetView.move(movementTileset);
 
-
+            if (mTilesetView.getCenter().x < 200)
+                mTilesetView.setCenter(sf::Vector2f(200,mTilesetView.getCenter().y));
+            if (mTilesetView.getCenter().y < 300)
+                mTilesetView.setCenter(sf::Vector2f(mTilesetView.getCenter().x,300));
+            if (mTileset->getTexture()->getSize().x > 400)
+                if (mTilesetView.getCenter().x > mTileset->getTexture()->getSize().x - 200)
+                    mTilesetView.setCenter(mTileset->getTexture()->getSize().x - 200, mTilesetView.getCenter().y);
+            if (mTileset->getTexture()->getSize().y > 600)
+                if (mTilesetView.getCenter().y > mTileset->getTexture()->getSize().y - 300)
+                    mTilesetView.setCenter(mTilesetView.getCenter().x, mTileset->getTexture()->getSize().y - 300);
+        }
+        else
+        {
+            mTilesetView.setCenter(200,300);
+        }
+    }
+    else
+    {
+        mTilesetView.setCenter(200,300);
+    }
 
     float x = mMapView.getCenter().x / (mChunkSize.x * mTileSize.x);
     float y;
@@ -265,6 +314,7 @@ void Editor::update(sf::Time dt)
                     }
                 }
             }
+            std::cout << "Chunk[1][1] Pos are : " << mChunks[1][1].getPos().x << " " << mChunks[1][1].getPos(). y<< std::endl;
         }
     }
     else
@@ -278,6 +328,48 @@ void Editor::update(sf::Time dt)
                 mChunks[i+1][j+1].setTileset(mTileset);
                 mChunks[i+1][j+1].setPos(sf::Vector2i(pos.x+i,pos.y+j));
                 mChunks[i+1][j+1].clearLayers();
+            }
+        }
+    }
+
+
+    if (mMouseEditMap && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+    {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
+        if (static_cast<sf::IntRect>(mMapRect).contains(mousePos))
+        {
+            // Il faudra prevoir le fait qu'on puisse cliquer sur différents layers et donc "bouger" la souris
+            // Et le fait que le layer n'existe peut etre pas
+
+            if (mInitialized)
+            {
+                sf::Vector2f mouse = mWindow.mapPixelToCoords(mousePos,mMapView);
+
+                float x = mouse.x / (mChunkSize.x * mTileSize.x);
+                float y;
+                if (isIsometric())
+                    y = mouse.y / (mChunkSize.y * mTileSize.y * 0.5f);
+                else
+                    y = mouse.y / (mChunkSize.y * mTileSize.y);
+                sf::Vector2i pos = sf::Vector2i(x,y);
+                if (x < 0) pos.x--;
+                if (y < 0) pos.y--;
+
+                mouse.x -= pos.x * mChunkSize.x * mTileSize.x;
+                mouse.y -= pos.y * mChunkSize.y * mTileSize.y;
+                // Mouse is relative to chunk
+
+                sf::Vector2i tilePos;
+                if (mIsometric)
+                    tilePos = toIsoPos(mouse);
+                else
+                    tilePos = toOrthoPos(mouse);
+
+                for (int j = -1; j < 2; j++)
+                    for (int i = -1; i < 2; i++)
+                        if (mChunks[i+1][j+1].getPos() == pos)
+                            if (mChunks[i+1][j+1].getLayer(mActualLayer) != nullptr)
+                                mChunks[i+1][j+1].getLayer(mActualLayer)->setTileId(tilePos.x,tilePos.y,mActualId);
             }
         }
     }
@@ -315,11 +407,14 @@ void Editor::render()
 
     sf::RectangleShape shape;
     shape.setSize(sf::Vector2f(400,600));
-    shape.setFillColor(sf::Color::Black);
+    shape.setFillColor(sf::Color::White);
     shape.setOrigin(sf::Vector2f(200,300));
     shape.setPosition(mTilesetView.getCenter());
     mWindow.draw(shape);
 
+    if (mTileset != nullptr)
+        if (mTileset->getTexture() != nullptr)
+            mSprite.setTexture(*(mTileset->getTexture().get()));
     mWindow.draw(mSprite);
 
     mWindow.setView(mWindow.getDefaultView());
@@ -355,9 +450,10 @@ void Editor::render()
 void Editor::stop()
 {
     if (mInitialized)
-        for (unsigned int j = 0; j < 3; j++)
-            for (unsigned int i = 0; i < 3; i++)
-                mChunks[i][j].saveToFile(mDirectory + std::to_string(mChunks[i][j].getPos().x) + "_" + std::to_string(mChunks[i][j].getPos().y) + ".chunk");
+    {
+        saveSettings();
+        saveChunks();
+    }
     mWindow.close();
 }
 
@@ -369,16 +465,6 @@ sf::Vector2i Editor::toIsoPos(sf::Vector2f pos)
 sf::Vector2i Editor::toOrthoPos(sf::Vector2f pos)
 {
     return sf::Vector2i(0,0);
-}
-
-Chunk Editor::getActualChunk(sf::Vector2f pos)
-{
-    if (mInitialized)
-        for (unsigned int j = 0; j < 3; j++)
-            for (unsigned int i = 0; i < 3; i++)
-                if (mChunks[i][j].getBounds().contains(pos))
-                    return mChunks[i][j];
-    return mChunks[1][1];
 }
 
 std::string Editor::getDirectory() const
@@ -460,6 +546,86 @@ unsigned int Editor::getMaxLayer() const
         }
     }
     return ret;
+}
+
+bool Editor::loadSettings()
+{
+    std::ifstream file(mDirectory + ".settings");
+    if (file)
+    {
+        std::string line;
+        unsigned int lineCount = 0;
+        while (std::getline(file,line))
+        {
+            CompressionUtils::uncompressLine(line);
+            switch (lineCount)
+            {
+                case 0: mDirectory = line; break;
+                case 1: mChunkSize.x = std::stoi(line); break;
+                case 2: mChunkSize.y = std::stoi(line); break;
+                case 3: mTileSize.x = std::stoi(line); break;
+                case 4: mTileSize.y = std::stoi(line); break;
+                case 5: mTexSize.x = std::stoi(line); break;
+                case 6: mTexSize.y = std::stoi(line); break;
+                case 7: mIsometric = (line == "true") ? true : false; break;
+                case 8: mCompressed = (line == "true") ? true : false; break;
+                default: break;
+            }
+            lineCount++;
+        }
+
+        file.close();
+        return true;
+    }
+    else
+    {
+        std::cout << "An error append while reading parameters..." << std::endl;
+        return false;
+    }
+}
+
+bool Editor::saveSettings()
+{
+    std::ofstream file(mDirectory + ".settings");
+    if (file)
+    {
+        file << CompressionUtils::compressLine(mDirectory) << std::endl;
+        file << CompressionUtils::compressLine(std::to_string(mChunkSize.x)) << std::endl;
+        file << CompressionUtils::compressLine(std::to_string(mChunkSize.y)) << std::endl;
+        file << CompressionUtils::compressLine(std::to_string(mTileSize.x)) << std::endl;
+        file << CompressionUtils::compressLine(std::to_string(mTileSize.y)) << std::endl;
+        file << CompressionUtils::compressLine(std::to_string(mTexSize.x)) << std::endl;
+        file << CompressionUtils::compressLine(std::to_string(mTexSize.y)) << std::endl;
+        if (mIsometric)
+            file << CompressionUtils::compressLine("true") << std::endl;
+        else
+            file << CompressionUtils::compressLine("false") << std::endl;
+        if (mCompressed)
+            file << CompressionUtils::compressLine("true") << std::endl;
+        else
+            file << CompressionUtils::compressLine("false") << std::endl;
+        // Online Mode
+        file << CompressionUtils::compressLine("false") << std::endl;
+
+        file.close();
+        return true;
+    }
+    else
+    {
+        std::cout << "An error append while saving parameters..." << std::endl;
+        return false;
+    }
+}
+
+void Editor::saveChunks()
+{
+    for (int j = -1; j < 2; j++)
+    {
+        for (int i = -1; i < 2; i++)
+        {
+            mChunks[i+1][j+1].saveToFile(mDirectory + std::to_string(mChunks[i+1][j+1].getPos().x) + "_" + std::to_string(mChunks[i+1][j+1].getPos().y) + ".chunk");
+        }
+    }
 }
 
 } // owe
