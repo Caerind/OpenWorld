@@ -334,11 +334,10 @@ void Editor::update(sf::Time dt)
         sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
         if (static_cast<sf::IntRect>(mMapRect).contains(mousePos))
         {
-            // Il faudra prevoir le fait qu'on puisse cliquer sur différents layers et donc "bouger" la souris
-            // Et le fait que le layer n'existe peut etre pas
-
             if (mInitialized)
             {
+                std::cout << "Mouse Before : " << mousePos.x << " " << mousePos.y << std::endl;
+
                 sf::Vector2f mouse = mWindow.mapPixelToCoords(mousePos,mMapView);
 
                 float x = mouse.x / (mChunkSize.x * mTileSize.x);
@@ -365,17 +364,26 @@ void Editor::update(sf::Time dt)
                 else
                     tilePos = toOrthoPos(mouse);
 
-                std::cout << "Size : " << mChunkSize.x * mTileSize.x << " " << mChunkSize.y * mTileSize.y << std::endl;
-                std::cout << "Chunk : " << pos.x << " " << pos.y << std::endl;
-                std::cout << "Mouse : " << mouse.x << " " << mouse.y << std::endl;
-                std::cout << "Tile : " << tilePos.x << " " << tilePos.y << std::endl;
-                std::cout << std::endl;
-
                 for (int j = -1; j < 2; j++)
                     for (int i = -1; i < 2; i++)
                         if (mChunks[i+1][j+1].getPos() == pos)
+                        {
                             if (mChunks[i+1][j+1].getLayer(mActualLayer) != nullptr)
+                            {
                                 mChunks[i+1][j+1].getLayer(mActualLayer)->setTileId(tilePos.x,tilePos.y,mActualId);
+                            }
+                            else
+                            {
+                                while (mChunks[i+1][j+1].getLayerCount() <= mActualLayer)
+                                {
+                                    mChunks[i+1][j+1].addLayer();
+                                }
+                                if (mChunks[i+1][j+1].getLayer(mActualLayer) != nullptr)
+                                {
+                                    mChunks[i+1][j+1].getLayer(mActualLayer)->setTileId(tilePos.x,tilePos.y,mActualId);
+                                }
+                            }
+                        }
             }
         }
     }
