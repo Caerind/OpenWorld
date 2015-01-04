@@ -336,8 +336,6 @@ void Editor::update(sf::Time dt)
         {
             if (mInitialized)
             {
-                std::cout << "Mouse Before : " << mousePos.x << " " << mousePos.y << std::endl;
-
                 sf::Vector2f mouse = mWindow.mapPixelToCoords(mousePos,mMapView);
 
                 float x = mouse.x / (mChunkSize.x * mTileSize.x);
@@ -349,8 +347,6 @@ void Editor::update(sf::Time dt)
                 sf::Vector2i pos = sf::Vector2i(x,y);
                 if (x < 0) pos.x--;
                 if (y < 0) pos.y--;
-
-                std::cout << "MousePos : " << mouse.x << " " << mouse.y << std::endl;
 
                 mouse.x -= pos.x * mChunkSize.x * mTileSize.x;
                 if (mIsometric)
