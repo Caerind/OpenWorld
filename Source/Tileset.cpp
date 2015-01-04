@@ -60,9 +60,10 @@ sf::Vector2f Tileset::getTexCoords(int id) const
 {
     if (mTexture != nullptr && id >= 0 && mMap != nullptr)
     {
-        int x = (id%(mTexture->getSize().x/mMap->getTexSize().x)) * mMap->getTexSize().x;
-        int y = (id/(mTexture->getSize().x/mMap->getTexSize().x)) * mMap->getTexSize().y;
-        return sf::Vector2f(x,y);
+        int tilePerLine = mTexture->getSize().x / mMap->getTexSize().x;
+        int x = id%tilePerLine;
+        int y = id/tilePerLine;
+        return sf::Vector2f(x * mMap->getTexSize().x,y * mMap->getTexSize().y);
     }
     else if (mMap == nullptr)
     {

@@ -19,13 +19,13 @@ Editor::Editor()
     mMapSpeed = 600;
     mMapRect = sf::FloatRect(0,0,800,600);
     mMapView.reset(mMapRect);
-    mMapView.setViewport(sf::FloatRect(0,0,0.75,1));
+    mMapView.setViewport(sf::FloatRect(0,0,0.66,1));
 
     mTilesetSpeed = 800;
     mTilesetRect = sf::FloatRect(0,0,400,600);
     mTilesetView.reset(mTilesetRect);
     mTilesetRect.left = 800;
-    mTilesetView.setViewport(sf::FloatRect(0.75,0,0.25,1));
+    mTilesetView.setViewport(sf::FloatRect(0.67,0,0.33,1));
 
     mFont.loadFromFile("Sansation.ttf");
 
@@ -115,6 +115,7 @@ void Editor::handleEvent()
                 std::cout << "Default Tileset Name : ";
                 std::cin >> tilesetName;
 
+                mActualId = 0;
                 loadTileset(tilesetName);
                 render();
 
@@ -179,14 +180,31 @@ void Editor::handleEvent()
                 std::cout << "Enter the directory name (Need to exist) : ";
                 std::cin >> mDirectory;
 
-                mInitialized = loadSettings();
-
                 std::string tilesetName;
                 std::cout << "Default Tileset Name : ";
                 std::cin >> tilesetName;
 
+                mInitialized = loadSettings();
+
+                mActualId = 0;
                 loadTileset(tilesetName);
                 render();
+
+                for (int j = -1; j < 2; j++)
+                {
+                    for (int i = -1; i < 2; i++)
+                    {
+                        mChunks[i+1][j+1].setTileset(mTileset);
+                        if (!mChunks[i+1][j+1].loadFromFile(mDirectory + std::to_string(i) + "_" + std::to_string(j) + ".chunk"))
+                        {
+                            mChunks[i+1][j+1].setPos(sf::Vector2i(i,j));
+                            mChunks[i+1][j+1].clearLayers();
+                            mChunks[i+1][j+1].addLayer();
+                            mChunks[i+1][j+1].saveToFile(std::string(mDirectory + std::to_string(i) + "_" + std::to_string(j) + ".chunk"));
+                        }
+                        mChunks[i+1][j+1].setTileset(mTileset);
+                    }
+                }
 
                 closeOverlay();
             }
@@ -198,6 +216,7 @@ void Editor::handleEvent()
                 {
                     saveSettings();
                     saveChunks();
+                    std::cout << "Saved ! " << std::endl;
                 }
             }
             else if (rButtonLayerP.contains(mousePos))
@@ -226,6 +245,7 @@ void Editor::handleEvent()
                     {
                         sf::Vector2f mouse = mWindow.mapPixelToCoords(mousePos,mTilesetView);
                         mActualId = mTileset->getId(mouse);
+                        std::cout << "New Id : " << mActualId << std::endl;
                     }
                 }
             }
@@ -377,7 +397,7 @@ void Editor::update(sf::Time dt)
 
 void Editor::render()
 {
-    mWindow.clear(sf::Color(128,128,128));
+    mWindow.clear();
 
     mWindow.setView(mMapView);
 
@@ -414,7 +434,20 @@ void Editor::render()
 
     if (mTileset != nullptr)
         if (mTileset->getTexture() != nullptr)
+        {
             mSprite.setTexture(*(mTileset->getTexture().get()));
+            if (mTexSize.x != 0 && mTexSize.y != 0)
+            {
+                sf::RectangleShape id;
+                id.setSize(sf::Vector2f(mTexSize.x,mTexSize.y));
+                sf::Vector2f texCoords = mTileset->getTexCoords(mActualId);
+                id.setPosition(texCoords);
+                id.setFillColor(sf::Color::Transparent);
+                id.setOutlineColor(sf::Color::Red);
+                id.setOutlineThickness(1);
+                mWindow.draw(id);
+            }
+        }
     mWindow.draw(mSprite);
 
     mWindow.setView(mWindow.getDefaultView());
@@ -499,9 +532,15 @@ bool Editor::isDataCompressed() const
 
 Tileset::Ptr Editor::getTileset(std::string const& filename)
 {
-    if (mTileset->getFilename() == filename)
+    if (mTileset != nullptr)
     {
-        return mTileset;
+        if (mTileset->getFilename() == filename)
+            return mTileset;
+        else
+        {
+            loadTileset(filename);
+            return mTileset;
+        }
     }
     else
     {
