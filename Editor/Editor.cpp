@@ -16,15 +16,17 @@ Editor::Editor()
 
     mWindow.create(sf::VideoMode(1200,600),"Map Editor");
 
-    mMapSpeed = 600;
+    mMapSpeed = 1000;
     mMapRect = sf::FloatRect(0,0,800,600);
     mMapView.reset(mMapRect);
+    mMapRect.height = 550;
     mMapView.setViewport(sf::FloatRect(0,0,0.66,1));
 
     mTilesetSpeed = 800;
     mTilesetRect = sf::FloatRect(0,0,400,600);
     mTilesetView.reset(mTilesetRect);
     mTilesetRect.left = 800;
+    mTilesetRect.height = 550;
     mTilesetView.setViewport(sf::FloatRect(0.67,0,0.33,1));
 
     mFont.loadFromFile("Sansation.ttf");
@@ -214,6 +216,7 @@ void Editor::handleEvent()
 
                 if (mInitialized)
                 {
+                    std::cout << "Saving... " << std::endl;
                     saveSettings();
                     saveChunks();
                     std::cout << "Saved ! " << std::endl;
@@ -306,25 +309,25 @@ void Editor::update(sf::Time dt)
         mTilesetView.setCenter(200,300);
     }
 
-    float x = mMapView.getCenter().x / (mChunkSize.x * mTileSize.x);
-    float y;
-    if (isIsometric())
-        y = mMapView.getCenter().y / (mChunkSize.y * mTileSize.y * 0.5f);
-    else
-        y = mMapView.getCenter().y / (mChunkSize.y * mTileSize.y);
-    sf::Vector2i pos = sf::Vector2i(x,y);
-    if (x < 0) pos.x--;
-    if (y < 0) pos.y--;
-
     if (mInitialized)
     {
+        float x = mMapView.getCenter().x / (mChunkSize.x * mTileSize.x);
+        float y;
+        if (isIsometric())
+            y = mMapView.getCenter().y / (mChunkSize.y * mTileSize.y * 0.5f);
+        else
+            y = mMapView.getCenter().y / (mChunkSize.y * mTileSize.y);
+        sf::Vector2i pos = sf::Vector2i(x,y);
+        if (x < 0) pos.x--;
+        if (y < 0) pos.y--;
+
         if (mChunks[1][1].getPos() != pos)
         {
+            saveChunks();
             for (int j = -1; j < 2; j++)
             {
                 for (int i = -1; i < 2; i++)
                 {
-                    mChunks[i+1][j+1].saveToFile(mDirectory + std::to_string(mChunks[i+1][j+1].getPos().x) + "_" + std::to_string(mChunks[i+1][j+1].getPos().y) + ".chunk");
                     if (!mChunks[i+1][j+1].loadFromFile(mDirectory + std::to_string(pos.x+i) + "_" + std::to_string(pos.y+j) + ".chunk"))
                     {
                         mChunks[i+1][j+1].setTileset(mTileset);
@@ -334,24 +337,8 @@ void Editor::update(sf::Time dt)
                     }
                 }
             }
-            std::cout << "Chunk[1][1] Pos are : " << mChunks[1][1].getPos().x << " " << mChunks[1][1].getPos(). y<< std::endl;
         }
     }
-    else
-    {
-        pos.x = 0;
-        pos.y = 0;
-        for (int j = -1; j < 2; j++)
-        {
-            for (int i = -1; i < 2; i++)
-            {
-                mChunks[i+1][j+1].setTileset(mTileset);
-                mChunks[i+1][j+1].setPos(sf::Vector2i(pos.x+i,pos.y+j));
-                mChunks[i+1][j+1].clearLayers();
-            }
-        }
-    }
-
 
     if (mMouseEditMap && sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
@@ -377,7 +364,6 @@ void Editor::update(sf::Time dt)
 
                 mouse.x -= pos.x * mChunkSize.x * mTileSize.x;
                 mouse.y -= pos.y * mChunkSize.y * mTileSize.y;
-                // Mouse is relative to chunk
 
                 sf::Vector2i tilePos;
                 if (mIsometric)
@@ -452,6 +438,12 @@ void Editor::render()
 
     mWindow.setView(mWindow.getDefaultView());
 
+    sf::RectangleShape guiBack;
+    guiBack.setSize(sf::Vector2f(1200,50));
+    guiBack.setPosition(0,550);
+    guiBack.setFillColor(sf::Color(128,128,128));
+    mWindow.draw(guiBack);
+
     mWindow.draw(mButtonNew);
     mWindow.draw(mTextNew);
     mWindow.draw(mButtonOpen);
@@ -492,12 +484,37 @@ void Editor::stop()
 
 sf::Vector2i Editor::toIsoPos(sf::Vector2f pos)
 {
-    return sf::Vector2i(0,0);
+    int i = pos.x / (mTileSize.x/2);
+    int j = pos.y / (mTileSize.y/2);
+
+    pos.x = pos.x - i * (mTileSize.x/2);
+    pos.y = pos.y - j * (mTileSize.y/2);
+
+    if (i%2 == j%2)
+    {
+        if (std::atan(pos.y/pos.x) > 3.14152/6)
+        {
+            i--;
+            j--;
+        }
+    }
+    else
+    {
+        if (-std::atan(pos.y/pos.x) > -3.14152/6)
+        {
+            j--;
+        }
+        else
+        {
+            i--;
+        }
+    }
+    return sf::Vector2i(i/2,j);
 }
 
 sf::Vector2i Editor::toOrthoPos(sf::Vector2f pos)
 {
-    return sf::Vector2i(0,0);
+    return sf::Vector2i(static_cast<int>(pos.x)/mTileSize.x,static_cast<int>(pos.y)/mTileSize.y);
 }
 
 std::string Editor::getDirectory() const
