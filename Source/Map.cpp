@@ -50,8 +50,12 @@ bool Map::isIsometric() const
 
 Map::Update Map::update(sf::Vector2f position)
 {
-    auto x = position.x / (mSettings.chunkSize.x * mSettings.tileSize.x);
-    auto y = position.y / (mSettings.chunkSize.y * mSettings.tileSize.y * 0.5f);
+    float x = position.x / (mSettings.chunkSize.x * mSettings.tileSize.x);
+    float y;
+    if (isIsometric())
+        y = position.y / (mSettings.chunkSize.y * mSettings.tileSize.y * 0.5f);
+    else
+        y = position.y / (mSettings.chunkSize.y * mSettings.tileSize.y);
     sf::Vector2i pos = sf::Vector2i(x,y);
     if (x < 0) pos.x--;
     if (y < 0) pos.y--;
